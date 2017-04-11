@@ -61,6 +61,231 @@
 
   
     
+    <h3 class="article-title"><a href="/2015/05/25/2015-05-25-tunning-hive/"><span>Hive优化笔记</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2015/05/25/2015-05-25-tunning-hive/" rel="bookmark">
+        <time class="entry-date published" datetime="2015-05-24T16:00:00.000Z">
+          2015-05-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <ul>
+<li>列裁剪 hive.optimize.cp=true（默认值为真）</li>
+<li>分区裁剪 hive.optimize.pruner=true（默认值为真）</li>
+<li><p>JOIN 小表放左边</p>
+<p>  如果 Join 的 key 相同，不管有多少个表，都会则会合并为一个 Map-Reduce</p>
+<pre><code>INSERT OVERWRITE TABLE pv_users
+ SELECT pv.pageid, u.age FROM page_view p
+ JOIN user u ON (pv.userid = u.userid)
+ JOIN newuser x ON (u.userid = x.userid);
+</code></pre><p>  如果 Join 的条件不相同</p>
+<pre><code> INSERT OVERWRITE TABLE pv_users
+    SELECT pv.pageid, u.age FROM page_view p
+    JOIN user u ON (pv.userid = u.userid)
+    JOIN newuser x on (u.age = x.age);
+
+上面和下面是一个效果
+
+ INSERT OVERWRITE TABLE tmptable
+    SELECT * FROM page_view p JOIN user u
+    ON (pv.userid = u.userid);
+ INSERT OVERWRITE TABLE pv_users
+    SELECT x.pageid, x.age FROM tmptable x
+    JOIN newuser y ON (x.age = y.age);
+</code></pre></li>
+</ul>
+<ul>
+<li>group by , MAP端做聚合</li>
+</ul>
+<p>hive.map.aggr=true（用于设定是否在 map 端进行聚合，默认值为真） hive.groupby.mapaggr.checkinterval=100000（用于设定 map 端进行聚合操作的条目数）</p>
+<p>有数据倾斜时进行负载均衡，设置hive.groupby.skewindata=true(默认为true)</p>
+<p>MapReduce优化</p>
+<p><a href="http://www.idryman.org/blog/2014/03/05/hadoop-performance-tuning-best-practices/" target="_blank" rel="external">http://www.idryman.org/blog/2014/03/05/hadoop-performance-tuning-best-practices/</a></p>
+<p>1、Memory tuning</p>
+<property><br>    <name>mapred.child.java.opts</name><br>    <value>-Xms1024M -Xmx2048M</value><br></property>
+
+<p>2、Minimize the map disk spill</p>
+<ul>
+<li>compress mapper output</li>
+<li><p>Use 70% of heap memory for spill buffer in mapper</p>
+<pre><code>&lt;property&gt;
+   &lt;name&gt;mapred.compress.map.output&lt;/name&gt;
+   &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;mapred.map.output.compression.codec&lt;/name&gt;
+    &lt;value&gt;com.hadoop.compression.lzo.LzoCodec&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;io.sort.mb&lt;/name&gt;
+    &lt;value&gt;800&lt;/value&gt;
+&lt;/property&gt;
+</code></pre></li>
+</ul>
+<p>3、Tuning mapper tasks</p>
+<p>4、Minimize your mapper output</p>
+<ul>
+<li>Filter out records on mapper side, not on reducer side.</li>
+<li>Use minimal data to form your map output key and map output value.</li>
+<li>Extends BinaryComparable interface or use Text for your map output key</li>
+<li>Set mapper output to be compressed</li>
+</ul>
+
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/bigdata/">bigdata</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/hadoop/">hadoop</a><a href="/tags/hive/">hive</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/11/25/2014-11-25-awk-in-datetime/"><span>Awk处理时间差值的方法</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/11/25/2014-11-25-awk-in-datetime/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-11-24T16:00:00.000Z">
+          2014-11-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>比如文件中每行有2个时间数值，需要计算出每行时间的差值</p>
+<p>time.txt</p>
+<pre><code>2014-08-25 09:58:47,2014-08-25 09:58:51
+2014-08-25 09:58:49,2014-08-25 09:58:56
+2014-08-25 09:58:49,2014-08-25 09:58:57
+2014-08-25 09:58:50,2014-08-25 09:58:57
+2014-08-25 09:58:52,2014-08-25 09:58:56
+2014-08-25 09:58:52,2014-08-25 09:58:57
+2014-08-25 09:58:55,2014-08-25 09:59:02
+2014-08-25 09:58:58,2014-08-25 09:59:02
+2014-08-25 09:59:00,2014-08-25 09:59:07
+2014-08-25 09:59:00,2014-08-25 09:59:08
+2014-08-25 09:59:03,2014-08-25 09:59:07
+2014-08-25 09:59:03,2014-08-25 09:59:08
+2014-08-25 09:59:04,2014-08-25 09:59:08
+</code></pre><p>可以使用awk中的mktime函数进行计算</p>
+<pre><code>cat time.txt | awk -F, &apos;{split($1, t, /[-/: ]+/)
+  t[3] = t[3] &gt; 69 ? 19 t[3] : 20 t[3]
+  split($2, r, /[-/: ]+/)
+  r[3] = r[3] &gt; 69 ? 19 r[3] : 20 r[3]
+  print $1&quot;,&quot;$2&quot;,&quot;mktime(t[3]&quot; &quot;t[1]&quot; &quot;t[2]&quot; &quot;t[4]&quot; &quot;t[5]&quot; &quot;t[6])-mktime(r[3]&quot; &quot;r[1]&quot; &quot;r[2]&quot; &quot;r[4]&quot; &quot;r[5]&quot; &quot;r[6])
+  }&apos;
+</code></pre><p>打印出来的结果就是这样的：</p>
+<pre><code>2014-08-25 09:58:47,2014-08-25 09:58:51,-4
+2014-08-25 09:58:49,2014-08-25 09:58:56,-7
+2014-08-25 09:58:49,2014-08-25 09:58:57,-8
+2014-08-25 09:58:50,2014-08-25 09:58:57,-7
+2014-08-25 09:58:52,2014-08-25 09:58:56,-4
+2014-08-25 09:58:52,2014-08-25 09:58:57,-5
+2014-08-25 09:58:55,2014-08-25 09:59:02,-7
+2014-08-25 09:58:58,2014-08-25 09:59:02,-4
+2014-08-25 09:59:00,2014-08-25 09:59:07,-7
+2014-08-25 09:59:00,2014-08-25 09:59:08,-8
+2014-08-25 09:59:03,2014-08-25 09:59:07,-4
+2014-08-25 09:59:03,2014-08-25 09:59:08,-5
+2014-08-25 09:59:04,2014-08-25 09:59:08,-4
+</code></pre>
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Linux/">Linux</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a><a href="/tags/awk/">awk</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
     <h3 class="article-title"><a href="/2014/11/20/2014-11-20-spark-step1/"><span>Spark第一步</span></a></h3>
     
   
@@ -131,7 +356,7 @@ Justin, 20
 
     <span class="post-categories">
       <i class="icon-categories"></i>
-        <a href="/categories/Spark/">Spark</a>
+        <a href="/categories/bigdata/">bigdata</a>
     </span>
     
 
@@ -482,7 +707,7 @@ http {
 
     <span class="post-categories">
       <i class="icon-categories"></i>
-        <a href="/categories/Storm/">Storm</a>
+        <a href="/categories/bigdata/">bigdata</a>
     </span>
     
 
@@ -879,7 +1104,7 @@ at kafka.javaapi.producer.Producer.send(Producer.scala:42)
 
     <span class="post-categories">
       <i class="icon-categories"></i>
-        <a href="/categories/Kafka/">Kafka</a>
+        <a href="/categories/bigdata/">bigdata</a>
     </span>
     
 
@@ -1258,226 +1483,6 @@ try {
     <span class="post-tags">
       <i class="icon-tags"></i>
         <a href="/tags/java/">java</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div> -->
-</article>
-
-
-
-
-
-
-  
-
-<article>
-
-  
-    
-    <h3 class="article-title"><a href="/2014/08/01/2014-08-01-centos-install-juniper-vpn/"><span>CentOS中安装Juniper SSL VPN Client</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2014/08/01/2014-08-01-centos-install-juniper-vpn/" rel="bookmark">
-        <time class="entry-date published" datetime="2014-07-31T16:00:00.000Z">
-          2014-08-01
-        </time>
-      </a>
-    </span>
-  </div>
-
-
-  <!-- 
-
-  <div class="article-content">
-    <div class="entry">
-      
-        <p>安装过程比较简单，但如果出现SecurityException之类的错误，就比较麻烦了。</p>
-<p>1.安装Java运行环境(<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="external">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>)</p>
-<p>2.安装Firefox的插件</p>
-<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd ~/.mozilla/plugins</div><div class="line">ln -s /usr/lib/jvm/jdk1.7.0_60/jre/lib/amd64/libnpjp2.so .</div></pre></td></tr></table></figure>
-</code></pre><p>   这一步如果没有使FireFox的java插件生效，可以安装icedtea-web</p>
-<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install icedtea-web</div><div class="line">#Debian可以使用apt-get install icedtea-web</div></pre></td></tr></table></figure>
-</code></pre><p>3.确保系统安装了openssl ，通过 <code>rmp -q openssl</code> 检查</p>
-<p>通过Firefox访问需要连接的网络，正常情况就可以连上了。但如果出现SecurityException错误，可能是Java安全级别比较高，可以打开jcontrol，<br>在Security中将Security Level设置为Low（或Medium）</p>
-<p>通过安装ncui访问VPN，安装ncui，可以参考这里 <a href="https://kb.iu.edu/d/bbte" target="_blank" rel="external">https://kb.iu.edu/d/bbte</a></p>
-<p>下载ncui地址: <a href="http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html" target="_blank" rel="external">http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html</a></p>
-<p>访问指令:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./ncsvc -h xxx.xxx.xxx.xxx -u test -p test -f test.der -r realm -U url_path</div></pre></td></tr></table></figure>
-<p>参考：</p>
-<p><a href="http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86_64/" target="_blank" rel="external">http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86-64/</a></p>
-<p><a href="https://www.centos.org/forums/viewtopic.php?t=1070" target="_blank" rel="external">https://www.centos.org/forums/viewtopic.php?t=1070</a></p>
-<p><a href="http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/" target="_blank" rel="external">http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/</a></p>
-<p>end.</p>
-
-      
-    </div>
-
-  </div> -->
-
-  <!-- <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-      
-
-    <span class="post-categories">
-      <i class="icon-categories"></i>
-        <a href="/categories/CentOs/">CentOs</a>
-    </span>
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/centos/">centos</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div> -->
-</article>
-
-
-
-
-
-
-  
-
-<article>
-
-  
-    
-    <h3 class="article-title"><a href="/2014/07/22/2014-07-22-how-to-sonar/"><span>如何使用sonar对项目代码质量进行分析</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2014/07/22/2014-07-22-how-to-sonar/" rel="bookmark">
-        <time class="entry-date published" datetime="2014-07-21T16:00:00.000Z">
-          2014-07-22
-        </time>
-      </a>
-    </span>
-  </div>
-
-
-  <!-- 
-
-  <div class="article-content">
-    <div class="entry">
-      
-        <p>对非maven模式的JAVA项目，可以使用sonar-runner分析</p>
-<p><a href="http://www.ituring.com.cn/article/69556" target="_blank" rel="external">http://www.ituring.com.cn/article/69556</a></p>
-<p>过程总结如下：</p>
-<ol>
-<li><p>下载SonarQube， <a href="http://www.sonarqube.org/downloads/" target="_blank" rel="external">http://www.sonarqube.org/downloads/</a>  <a href="http://dist.sonar.codehaus.org/sonarqube-4.3.2.zip" target="_blank" rel="external">http://dist.sonar.codehaus.org/sonarqube-4.3.2.zip</a></p>
-</li>
-<li><p>解压sonarqube-4.3.2.zip，<code>cd sonarqube-4.3.2</code></p>
-</li>
-<li>修改conf下的sonar.properties配置项：</li>
-</ol>
-<pre><code>#修改jdbc的配置
-sonar.jdbc.username=root
-sonar.jdbc.password=admin
-sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8&amp;rewriteBatchedStatements=true
-
-#修改WebServer监听端口
-sonar.web.port=9000
-</code></pre><ol>
-<li>启动Sonar WebServer，第一次启动比较慢，需要初始化数据库表结构。</li>
-</ol>
-<pre><code>    #bin/[OS]/sonar.sh start
-
-    bin/linux-x86-64/sonar.sh start
-
-
-启动过程中，有一个坑就是可能会出现如下错误：
-
-
-    java.lang.IllegalStateException: Unable to read plugin manifest from jar : /opt/sonarqube-4.3.2/lib/bundled-plugins/._sonar-java-plugin-2.1.jar
-    at org.sonar.updatecenter.common.PluginManifest.&lt;init&gt;(PluginManifest.java:115) ~[sonar-update-center-common-1.8.jar:na]
-    at org.sonar.core.plugins.PluginJarInstaller.extractMetadata(PluginJarInstaller.java:64) ~[sonar-core-4.3.2.jar:na]
-    at org.sonar.server.plugins.ServerPluginJarsInstaller.copyBundledPlugins(ServerPluginJarsInstaller.java:110) ~[ServerPluginJarsInstaller.class:na]
-    at org.sonar.server.plugins.ServerPluginJarsInstaller.install(ServerPluginJarsInstaller.java:67) ~[ServerPluginJarsInstaller.class:na]
-    at org.sonar.server.plugins.ServerPluginRepository.start(ServerPluginRepository.java:49) ~[ServerPluginRepository.class:na]
-
-
-
-解决办法就是删除目录下所有的._*.jar文件：
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find . -name &quot;._*.jar&quot; | xargs rm</div></pre></td></tr></table></figure>
-</code></pre><ol>
-<li><p>配置mvn，修改~/.m2下的settings.xml文件：</p>
-<pre><code>&lt;settings&gt;
-    &lt;profiles&gt;
-        &lt;profile&gt;
-            &lt;id&gt;sonar&lt;/id&gt;
-            &lt;activation&gt;
-                &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
-            &lt;/activation&gt;
-            &lt;properties&gt;
-                &lt;!-- 修改这里 --&gt;
-                &lt;sonar.jdbc.url&gt;
-                  jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
-                &lt;/sonar.jdbc.url&gt;
-                &lt;sonar.jdbc.username&gt;root&lt;/sonar.jdbc.username&gt;
-                &lt;sonar.jdbc.password&gt;admin&lt;/sonar.jdbc.password&gt;
-
-                &lt;!-- Optional URL to server. Default value is http://localhost:9000 --&gt;
-                &lt;!-- 修改这里 --&gt;
-                &lt;sonar.host.url&gt;
-                  http://localhost:9000
-                &lt;/sonar.host.url&gt;
-            &lt;/properties&gt;
-        &lt;/profile&gt;
-     &lt;/profiles&gt;
-&lt;/settings&gt;
-</code></pre></li>
-</ol>
-<ol>
-<li><p>到你的project工程下，执行 mvn sonar:sonar</p>
-</li>
-<li><p>访问<a href="http://localhost:9000，可以看到分析结果。" target="_blank" rel="external">http://localhost:9000，可以看到分析结果。</a></p>
-</li>
-</ol>
-<p>结束。</p>
-
-      
-    </div>
-
-  </div> -->
-
-  <!-- <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-      
-
-    <span class="post-categories">
-      <i class="icon-categories"></i>
-        <a href="/categories/java/">java</a>
-    </span>
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/java/">java</a><a href="/tags/sonar/">sonar</a>
     </span>
     
 

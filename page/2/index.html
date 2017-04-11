@@ -61,6 +61,226 @@
 
   
     
+    <h3 class="article-title"><a href="/2014/08/01/2014-08-01-centos-install-juniper-vpn/"><span>CentOS中安装Juniper SSL VPN Client</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/08/01/2014-08-01-centos-install-juniper-vpn/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-07-31T16:00:00.000Z">
+          2014-08-01
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>安装过程比较简单，但如果出现SecurityException之类的错误，就比较麻烦了。</p>
+<p>1.安装Java运行环境(<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="external">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>)</p>
+<p>2.安装Firefox的插件</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd ~/.mozilla/plugins</div><div class="line">ln -s /usr/lib/jvm/jdk1.7.0_60/jre/lib/amd64/libnpjp2.so .</div></pre></td></tr></table></figure>
+</code></pre><p>   这一步如果没有使FireFox的java插件生效，可以安装icedtea-web</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install icedtea-web</div><div class="line">#Debian可以使用apt-get install icedtea-web</div></pre></td></tr></table></figure>
+</code></pre><p>3.确保系统安装了openssl ，通过 <code>rmp -q openssl</code> 检查</p>
+<p>通过Firefox访问需要连接的网络，正常情况就可以连上了。但如果出现SecurityException错误，可能是Java安全级别比较高，可以打开jcontrol，<br>在Security中将Security Level设置为Low（或Medium）</p>
+<p>通过安装ncui访问VPN，安装ncui，可以参考这里 <a href="https://kb.iu.edu/d/bbte" target="_blank" rel="external">https://kb.iu.edu/d/bbte</a></p>
+<p>下载ncui地址: <a href="http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html" target="_blank" rel="external">http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html</a></p>
+<p>访问指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./ncsvc -h xxx.xxx.xxx.xxx -u test -p test -f test.der -r realm -U url_path</div></pre></td></tr></table></figure>
+<p>参考：</p>
+<p><a href="http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86_64/" target="_blank" rel="external">http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86-64/</a></p>
+<p><a href="https://www.centos.org/forums/viewtopic.php?t=1070" target="_blank" rel="external">https://www.centos.org/forums/viewtopic.php?t=1070</a></p>
+<p><a href="http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/" target="_blank" rel="external">http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/</a></p>
+<p>end.</p>
+
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/CentOs/">CentOs</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/centos/">centos</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/07/22/2014-07-22-how-to-sonar/"><span>如何使用sonar对项目代码质量进行分析</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/07/22/2014-07-22-how-to-sonar/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-07-21T16:00:00.000Z">
+          2014-07-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>对非maven模式的JAVA项目，可以使用sonar-runner分析</p>
+<p><a href="http://www.ituring.com.cn/article/69556" target="_blank" rel="external">http://www.ituring.com.cn/article/69556</a></p>
+<p>过程总结如下：</p>
+<ol>
+<li><p>下载SonarQube， <a href="http://www.sonarqube.org/downloads/" target="_blank" rel="external">http://www.sonarqube.org/downloads/</a>  <a href="http://dist.sonar.codehaus.org/sonarqube-4.3.2.zip" target="_blank" rel="external">http://dist.sonar.codehaus.org/sonarqube-4.3.2.zip</a></p>
+</li>
+<li><p>解压sonarqube-4.3.2.zip，<code>cd sonarqube-4.3.2</code></p>
+</li>
+<li>修改conf下的sonar.properties配置项：</li>
+</ol>
+<pre><code>#修改jdbc的配置
+sonar.jdbc.username=root
+sonar.jdbc.password=admin
+sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8&amp;rewriteBatchedStatements=true
+
+#修改WebServer监听端口
+sonar.web.port=9000
+</code></pre><ol>
+<li>启动Sonar WebServer，第一次启动比较慢，需要初始化数据库表结构。</li>
+</ol>
+<pre><code>    #bin/[OS]/sonar.sh start
+
+    bin/linux-x86-64/sonar.sh start
+
+
+启动过程中，有一个坑就是可能会出现如下错误：
+
+
+    java.lang.IllegalStateException: Unable to read plugin manifest from jar : /opt/sonarqube-4.3.2/lib/bundled-plugins/._sonar-java-plugin-2.1.jar
+    at org.sonar.updatecenter.common.PluginManifest.&lt;init&gt;(PluginManifest.java:115) ~[sonar-update-center-common-1.8.jar:na]
+    at org.sonar.core.plugins.PluginJarInstaller.extractMetadata(PluginJarInstaller.java:64) ~[sonar-core-4.3.2.jar:na]
+    at org.sonar.server.plugins.ServerPluginJarsInstaller.copyBundledPlugins(ServerPluginJarsInstaller.java:110) ~[ServerPluginJarsInstaller.class:na]
+    at org.sonar.server.plugins.ServerPluginJarsInstaller.install(ServerPluginJarsInstaller.java:67) ~[ServerPluginJarsInstaller.class:na]
+    at org.sonar.server.plugins.ServerPluginRepository.start(ServerPluginRepository.java:49) ~[ServerPluginRepository.class:na]
+
+
+
+解决办法就是删除目录下所有的._*.jar文件：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find . -name &quot;._*.jar&quot; | xargs rm</div></pre></td></tr></table></figure>
+</code></pre><ol>
+<li><p>配置mvn，修改~/.m2下的settings.xml文件：</p>
+<pre><code>&lt;settings&gt;
+    &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;id&gt;sonar&lt;/id&gt;
+            &lt;activation&gt;
+                &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+            &lt;/activation&gt;
+            &lt;properties&gt;
+                &lt;!-- 修改这里 --&gt;
+                &lt;sonar.jdbc.url&gt;
+                  jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
+                &lt;/sonar.jdbc.url&gt;
+                &lt;sonar.jdbc.username&gt;root&lt;/sonar.jdbc.username&gt;
+                &lt;sonar.jdbc.password&gt;admin&lt;/sonar.jdbc.password&gt;
+
+                &lt;!-- Optional URL to server. Default value is http://localhost:9000 --&gt;
+                &lt;!-- 修改这里 --&gt;
+                &lt;sonar.host.url&gt;
+                  http://localhost:9000
+                &lt;/sonar.host.url&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+     &lt;/profiles&gt;
+&lt;/settings&gt;
+</code></pre></li>
+</ol>
+<ol>
+<li><p>到你的project工程下，执行 mvn sonar:sonar</p>
+</li>
+<li><p>访问<a href="http://localhost:9000，可以看到分析结果。" target="_blank" rel="external">http://localhost:9000，可以看到分析结果。</a></p>
+</li>
+</ol>
+<p>结束。</p>
+
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java/">java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java/">java</a><a href="/tags/sonar/">sonar</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
     <h3 class="article-title"><a href="/2014/07/16/2014-07-16-compile-kafka-from-source/"><span>如何从源码编译Kafka0.8.x</span></a></h3>
     
   
@@ -994,228 +1214,6 @@ http {
     <span class="post-tags">
       <i class="icon-tags"></i>
         <a href="/tags/Hibernate/">Hibernate</a><a href="/tags/Spring/">Spring</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div> -->
-</article>
-
-
-
-
-
-
-  
-
-<article>
-
-  
-    
-    <h3 class="article-title"><a href="/2014/02/09/2014-02-09-storm-learn/"><span>Storm学习笔记</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2014/02/09/2014-02-09-storm-learn/" rel="bookmark">
-        <time class="entry-date published" datetime="2014-02-08T16:00:00.000Z">
-          2014-02-09
-        </time>
-      </a>
-    </span>
-  </div>
-
-
-  <!-- 
-
-  <div class="article-content">
-    <div class="entry">
-      
-        <p>#Storm</p>
-<p>牛逼的产品就是使用起来简单，而自身内含不简单，Storm就是之一。</p>
-<p><a href="http://qing.blog.sina.com.cn/2294942122/88ca09aa33002dsh.html?sudaref=www.google.com" target="_blank" rel="external">流处理框架Storm简介</a></p>
-<p><a href="http://www.searchtb.com/2012/09/introduction-to-storm.html" target="_blank" rel="external">Storm简介</a></p>
-<p>这些文章写的非常好，做一些学习笔记。</p>
-<p>###介绍</p>
-<p>分主从2种节点，3种不同的Daemon:Nimbus运行在主节点上, 从节点上运行Supervisor，每个从节点上还有一系列的worker process来运行具体任务。Daemon之间的信息交换统统是通过Zookeeper来实现。</p>
-<p>Nimbus，主要负责接收客户端提交的Topology，进行相应的验证，分配任务，进而把任务相关的元信息写入Zookeeper相应目录，还负责通过Zookeeper来监控任务执行情况；</p>
-<p>Supervisor，负责监听Nimbus分配的任务，根据实际情况启动/停止工作进程(Worker)；</p>
-<p>Worker，运行具体处理组件逻辑的进程；</p>
-<p>过程涉及到了3个相关实体：</p>
-<ol>
-<li><p>Worker：一个完整的Topology是由分布在多个节点上的Worker进程来执行的，每个Worker都执行（且仅执行）Topology的一个子集。</p>
-</li>
-<li><p>Executor：在每个Worker内部，会有多个Executor，每个executor对应一个线程。</p>
-</li>
-<li><p>Task：执行具体数据处理的相关实体，也就是用户实现的Spout/Blot实例。Storm中，一个executor可能会对应一个或者多个task。这就是说，系统中executor的数量是小于等于task的数量的。</p>
-</li>
-</ol>
-<p>Storm和Hadoop的对比:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">Hadoop</th>
-<th style="text-align:center">Storm</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">JobTracker</td>
-<td style="text-align:center">Nimbus</td>
-<td></td>
-</tr>
-<tr>
-<td style="text-align:center">TaskTracker</td>
-<td style="text-align:center">Supervisor</td>
-</tr>
-<tr>
-<td style="text-align:center">Child</td>
-<td style="text-align:center">Worker</td>
-</tr>
-<tr>
-<td style="text-align:center">Job</td>
-<td style="text-align:center">Topology</td>
-</tr>
-<tr>
-<td style="text-align:center">Mapper/Reducer</td>
-<td style="text-align:center">Spout/Bolt</td>
-</tr>
-</tbody>
-</table>
-<ol>
-<li><p>Topology：Storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。</p>
-</li>
-<li><p>Spout：在一个Topology中产生源数据流的组件。通常情况下Spout会从外部数据源中读取数据，然后转换为Topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，Storm框架会不停地调用此函数，用户只要在其中生成源数据即可。</p>
-</li>
-<li><p>Bolt：在一个Topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。</p>
-</li>
-<li><p>Tuple：一次消息传递的基本单元。本来应该是一个Key-Value的map，但是由于各个组件间传递的Tuple的字段名称已经事先定义好，所以Tuple中只要按序填入各个value就行了，所以就是一个value list.</p>
-</li>
-<li><p>Stream：源源不断传递的tuple就组成了Stream。</p>
-</li>
-<li><p>Stream Grouping: Storm中提供若干种实用的grouping方式，包括shuffle, fields hash, all, global, none, direct和localOrShuffle等。</p>
-</li>
-</ol>
-<p>Storm记录级容错的基本原理和事务拓扑可以参考文前的链接文章。</p>
-
-      
-    </div>
-
-  </div> -->
-
-  <!-- <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-      
-
-    <span class="post-categories">
-      <i class="icon-categories"></i>
-        <a href="/categories/bigdata/">bigdata</a>
-    </span>
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/Storm/">Storm</a>
-    </span>
-    
-
-    </div>
-
-    
-  </div> -->
-</article>
-
-
-
-
-
-
-  
-
-<article>
-
-  
-    
-    <h3 class="article-title"><a href="/2014/01/01/2014-01-01-mysql-op/"><span>MySQL常见操作（不断更新）</span></a></h3>
-    
-  
-
-  <div class="article-top-meta">
-    <span class="posted-on">
-      <a href="/2014/01/01/2014-01-01-mysql-op/" rel="bookmark">
-        <time class="entry-date published" datetime="2013-12-31T16:00:00.000Z">
-          2014-01-01
-        </time>
-      </a>
-    </span>
-  </div>
-
-
-  <!-- 
-
-  <div class="article-content">
-    <div class="entry">
-      
-        <p>MySQL创建GBK字符集数据库：</p>
-<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">GBK: create database `test` DEFAULT CHARACTER SET gbk COLLATE gbk_chinese_ci;</div><div class="line"></div><div class="line">UTF8: CREATE DATABASE `test` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;</div></pre></td></tr></table></figure>
-</code></pre><p>MySQL修改root密码</p>
-<ul>
-<li><p>用SET PASSWORD命令</p>
-<p>  <code>SET PASSWORD FOR &#39;root&#39;@&#39;localhost&#39; = PASSWORD(&#39;mynewpassword&#39;);</code></p>
-</li>
-<li><p>用mysqladmin</p>
-<p>  <code>mysqladmin -u root password &quot;mynewpassword&quot;</code></p>
-</li>
-</ul>
-<pre><code>如果root已经设置过密码，采用如下方法
-
-`mysqladmin -u root password oldpass &quot;mynewpassword&quot;`
-</code></pre><ul>
-<li><p>用UPDATE直接编辑user表</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">mysql&gt; use mysql;</div><div class="line"></div><div class="line">mysql&gt; UPDATE user SET Password = PASSWORD(&apos;mynewpassword&apos;) WHERE user = &apos;root&apos;;</div><div class="line"></div><div class="line">mysql&gt; FLUSH PRIVILEGES;</div></pre></td></tr></table></figure>
-</li>
-<li><p>如果root密码丢失，可以这样：<br>  使用下面的方法，重启mysql</p>
-<p>  <code>mysqld_safe --skip-grant-tables&amp;</code></p>
-<p>  然后登录mysql</p>
-<pre><code>mysql -u root mysql    
-mysql&gt; UPDATE user SET password=PASSWORD(&quot;mynewpassword&quot;) WHERE user=&apos;root&apos;;
-mysql&gt; FLUSH PRIVILEGES;
-</code></pre></li>
-</ul>
-<p>MySQL中取Group By后的Top N问题<br>比如取group by后每个分组的Top 3</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">SELECT</div><div class="line">    mac_group,</div><div class="line">    mac,</div><div class="line">    dur</div><div class="line">FROM</div><div class="line">(</div><div class="line">    SELECT</div><div class="line">        mac_group,</div><div class="line">        sum(sum_dur) as dur,</div><div class="line">        mac,</div><div class="line">        @rn := IF(@prev = mac_group and @prev_mac = mac, @rn + 1, 1) AS rn,</div><div class="line">        @prev := mac_group,</div><div class="line">        @prev_mac := mac</div><div class="line">    FROM mac_customer_stats</div><div class="line">    JOIN (SELECT @prev := NULL, @prev_mac :=NULL, @rn := 0) AS vars</div><div class="line">    where mac_group in (1,2,3)</div><div class="line">    group by mac_group, mac, day</div><div class="line">    ORDER BY mac_group, mac, dur DESC</div><div class="line">) AS T1</div><div class="line">WHERE rn &lt;= 3;</div></pre></td></tr></table></figure>
-
-      
-    </div>
-
-  </div> -->
-
-  <!-- <div class="article-footer">
-    <div class="article-meta pull-left">
-
-    
-      
-
-    <span class="post-categories">
-      <i class="icon-categories"></i>
-        <a href="/categories/MySQL/">MySQL</a>
-    </span>
-    
-
-    
-    
-
-    <span class="post-tags">
-      <i class="icon-tags"></i>
-        <a href="/tags/mysql/">mysql</a>
     </span>
     
 

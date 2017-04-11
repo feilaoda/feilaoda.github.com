@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Awk处理时间差值的方法 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="比如文件中每行有2个时间数值，需要计算出每行时间的差值
+time.txt
+2014-08-25 09:58:47,2014-08-25 09:58:51
+2014-08-25 09:58:49,2014-08-25 09:58:56
+2014-08-25 09:58:49,2014-08-25 09">
+  
+
+  
+  
+  <meta name="keywords" content="linux,awk">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Awk处理时间差值的方法"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Awk处理时间差值的方法</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/11/25/2014-11-25-awk-in-datetime/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-11-24T16:00:00.000Z">
+          2014-11-25
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>比如文件中每行有2个时间数值，需要计算出每行时间的差值</p>
+<p>time.txt</p>
+<pre><code>2014-08-25 09:58:47,2014-08-25 09:58:51
+2014-08-25 09:58:49,2014-08-25 09:58:56
+2014-08-25 09:58:49,2014-08-25 09:58:57
+2014-08-25 09:58:50,2014-08-25 09:58:57
+2014-08-25 09:58:52,2014-08-25 09:58:56
+2014-08-25 09:58:52,2014-08-25 09:58:57
+2014-08-25 09:58:55,2014-08-25 09:59:02
+2014-08-25 09:58:58,2014-08-25 09:59:02
+2014-08-25 09:59:00,2014-08-25 09:59:07
+2014-08-25 09:59:00,2014-08-25 09:59:08
+2014-08-25 09:59:03,2014-08-25 09:59:07
+2014-08-25 09:59:03,2014-08-25 09:59:08
+2014-08-25 09:59:04,2014-08-25 09:59:08
+</code></pre><p>可以使用awk中的mktime函数进行计算</p>
+<pre><code>cat time.txt | awk -F, &apos;{split($1, t, /[-/: ]+/)
+  t[3] = t[3] &gt; 69 ? 19 t[3] : 20 t[3]
+  split($2, r, /[-/: ]+/)
+  r[3] = r[3] &gt; 69 ? 19 r[3] : 20 r[3]
+  print $1&quot;,&quot;$2&quot;,&quot;mktime(t[3]&quot; &quot;t[1]&quot; &quot;t[2]&quot; &quot;t[4]&quot; &quot;t[5]&quot; &quot;t[6])-mktime(r[3]&quot; &quot;r[1]&quot; &quot;r[2]&quot; &quot;r[4]&quot; &quot;r[5]&quot; &quot;r[6])
+  }&apos;
+</code></pre><p>打印出来的结果就是这样的：</p>
+<pre><code>2014-08-25 09:58:47,2014-08-25 09:58:51,-4
+2014-08-25 09:58:49,2014-08-25 09:58:56,-7
+2014-08-25 09:58:49,2014-08-25 09:58:57,-8
+2014-08-25 09:58:50,2014-08-25 09:58:57,-7
+2014-08-25 09:58:52,2014-08-25 09:58:56,-4
+2014-08-25 09:58:52,2014-08-25 09:58:57,-5
+2014-08-25 09:58:55,2014-08-25 09:59:02,-7
+2014-08-25 09:58:58,2014-08-25 09:59:02,-4
+2014-08-25 09:59:00,2014-08-25 09:59:07,-7
+2014-08-25 09:59:00,2014-08-25 09:59:08,-8
+2014-08-25 09:59:03,2014-08-25 09:59:07,-4
+2014-08-25 09:59:03,2014-08-25 09:59:08,-5
+2014-08-25 09:59:04,2014-08-25 09:59:08,-4
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Linux/">Linux</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/linux/">linux</a><a href="/tags/awk/">awk</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
