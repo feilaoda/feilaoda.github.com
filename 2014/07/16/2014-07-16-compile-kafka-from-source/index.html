@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>如何从源码编译Kafka0.8.x | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="下载代码
+1git clone http://git-wip-us.apache.org/repos/asf/kafka.git kafka
+下载可执行文件:https://archive.apache.org/dist/kafka/0.8.1/kafka_2.9.2-0.8.1.tgz
+相关文档：">
+  
+
+  
+  
+  <meta name="keywords" content="kafka,mq">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="如何从源码编译Kafka0.8.x"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>如何从源码编译Kafka0.8.x</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/07/16/2014-07-16-compile-kafka-from-source/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-07-15T16:00:00.000Z">
+          2014-07-16
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>下载代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone http://git-wip-us.apache.org/repos/asf/kafka.git kafka</div></pre></td></tr></table></figure>
+<p>下载可执行文件:<a href="https://archive.apache.org/dist/kafka/0.8.1/kafka_2.9.2-0.8.1.tgz" target="_blank" rel="external">https://archive.apache.org/dist/kafka/0.8.1/kafka_2.9.2-0.8.1.tgz</a></p>
+<p>相关文档： <a href="http://kafka.apache.org/code.html" target="_blank" rel="external">http://kafka.apache.org/code.html</a></p>
+<p>编译kafka:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">直接运行代码</div><div class="line">./gradlew jar</div></pre></td></tr></table></figure>
+<p>如果需要编译某Scala特定版本，则加上版本号 <code>./gradlew -PscalaVersion=2.9.2 jar</code></p>
+<p>编译出的jar包在core/build/libs/目录下。</p>
+<ul>
+<li>性能测试用的jar包在perf/build/libs/目录下，<a href="http://kafka.apache.org" target="_blank" rel="external">官方</a>下载的bin包里面不包含performance相关的包，需要将perf/build/libs/下的kafka-perf_2.9.2-0.8.1.jar拷贝到kafka_2.9.2-0.8.1目录的libs下</li>
+</ul>
+<p>启动kafka：</p>
+<pre><code>#在kafka_2.9.2-0.8.1目录下
+#启动zookeeper
+bin/zookeeper-server-start.sh config/zookeeper.properties &amp;   
+
+#启动kafka server
+bin/kafka-server-start.sh config/server.properties &amp;
+</code></pre><p>创建topic</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic testtopic</div></pre></td></tr></table></figure>
+<p>测试Producer性能</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/kafka-producer-perf-test.sh --broker-list localhost:9092 --topic testtopic --messages 300000 --message-size 1000 --batch-size 200</div></pre></td></tr></table></figure>
+<ul>
+<li>messages:     总message个数</li>
+<li>message-size: message大小</li>
+<li>batch-size:     包大小，一个包中message个数</li>
+</ul>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Kafka/">Kafka</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/kafka/">kafka</a><a href="/tags/mq/">mq</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

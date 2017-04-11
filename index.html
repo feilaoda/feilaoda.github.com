@@ -1,0 +1,1519 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/11/20/2014-11-20-spark-step1/"><span>Spark第一步</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/11/20/2014-11-20-spark-step1/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-11-19T16:00:00.000Z">
+          2014-11-20
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>##安装Spark</p>
+<p>通过 <a href="http://spark.apache.org/downloads.html" target="_blank" rel="external">http://spark.apache.org/downloads.html</a> 下载最新Spark，目前是1.0.2版本。<br>下载后解压到/opt/spark-1.0.2-bin-hadoop2</p>
+<p>也可以通过源码进行编译</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sbt/sbt -Dhadoop.version=2.2.0 -Pyarn assembly</div></pre></td></tr></table></figure>
+<p>启动本地模式，可以使用pyspark启动，用于开发环境，这里主要讲Python环境</p>
+<pre><code>cd /opt/spark-1.0.2-bin-hadoop2
+
+./bin/pyspark --master local[4]
+</code></pre><p>通过如下指令，可以加载数据文件people.txt</p>
+<pre><code>Michael, 29
+Andy, 30
+Justin, 19
+</code></pre><p>sc是pyspark中已经定义的一个变量， sc = SparkContext(…)，可以直接使用。sc.textFile加载TXT数据文件</p>
+<pre><code>lines = sc.textFile(&quot;examples/src/main/resources/people.txt&quot;)
+</code></pre><p>map函数是MapReduce里面的map动作，可以使用lambda处理简单的逻辑，或者直接写python代码。这里是用”,”把每一行分隔成数组。</p>
+<pre><code>parts = lines.map(lambda l:l.split(&quot;,&quot;))
+</code></pre><p>可以使用collect()方法打印parts的内容，比如<code>parts.collect()</code>输出结果是</p>
+<pre><code>[[u&apos;Michael&apos;, u&apos; 29&apos;], [u&apos;Andy&apos;, u&apos; 30&apos;], [u&apos;Justin&apos;, u&apos; 19&apos;]]
+</code></pre><p>reduceByKey是根据map出来的key做reduce，比如<code>counts = parts.reduceByKey(lambda a, b: a + b)</code></p>
+<p>完整的代码如下：</p>
+<pre><code>lines = sc.textFile(&quot;examples/src/main/resources/people.txt&quot;)
+parts = lines.map(lambda l:l.split(&quot;,&quot;))
+parts = parts.map(lambda p:(p[0].strip(), int(p[1].strip())))
+counts = parts.reduceByKey(lambda a, b: a + b)
+counts.collect()
+
+#输出
+[(u&apos;Michael&apos;, 29), (u&apos;Andy&apos;, 30), (u&apos;Justin&apos;, 19)]
+</code></pre><p>如果people.txt中的数据是下面的：</p>
+<pre><code>Michael, 29
+Andy, 30
+Justin, 19
+Michael, 11
+Justin, 20
+</code></pre><p>那么<code>counts.collect()</code>的输出结果就是下面的情况了</p>
+<pre><code>[(u&apos;Michael&apos;, 40), (u&apos;Andy&apos;, 30), (u&apos;Justin&apos;, 39)]
+</code></pre>
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/scala/">scala</a><a href="/tags/spark/">spark</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/11/01/2014-11-01-nginx-static-files/"><span>Nginx配置静态文件服务器方法</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/11/01/2014-11-01-nginx-static-files/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-10-31T16:00:00.000Z">
+          2014-11-01
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>该配置可以轻松支撑每分钟上千的请求，并用一些安全方面的设置，这里作一些记录。</p>
+<p>配置文件 nginx.conf</p>
+<hr>
+<pre><code>#worker进程的数量
+worker_processes  3;
+
+#worker进程可以打开的最大文件句柄数
+#worker_rlimit_nofile 1024;
+
+events {
+    worker_connections  64;
+}
+
+http {
+
+ ## Size Limits
+ #
+ #client_body_buffer_size   8k;
+ #client_header_buffer_size 1k;
+ #client_max_body_size      1m;
+ #large_client_header_buffers 4 4k/8k;
+
+ ## Timeouts
+ #client_body_timeout     60;
+ #client_header_timeout   60;
+  keepalive_timeout       300 300;
+ #send_timeout            60;
+
+ ## General Options
+  charset                 utf-8;
+  default_type            application/octet-stream;
+  ignore_invalid_headers  on;
+  include                 /etc/mime.types;
+  keepalive_requests      20;
+ #keepalive_disable       msie6;
+  max_ranges              0;
+ #open_file_cache         max=1000 inactive=1h;
+ #open_file_cache_errors  on;
+ #open_file_cache_min_uses 3;
+ #open_file_cache_valid   1m;
+  recursive_error_pages   on;
+  sendfile                on;
+  server_tokens           off;
+ #server_name_in_redirect on;
+  source_charset          utf-8;
+ #tcp_nodelay             on;
+ #tcp_nopush              off;
+
+ ## Request limits
+  limit_req_zone  $binary_remote_addr  zone=gulag:1m   rate=60r/m;
+
+ ## Compression
+  gzip              on;
+  gzip_static       on;
+ #gzip_buffers      16 8k;
+ #gzip_comp_level   1;
+ #gzip_http_version 1.0;
+ #gzip_min_length   0;
+ #gzip_types        text/plain text/html text/css image/x-icon image/bmp;
+  gzip_vary         on;
+
+ ## Log Format
+  log_format  main  &apos;$remote_addr $host $remote_user [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; $ssl_cipher $request_time&apos;;
+
+ ## Deny access to any host other than (www.)mydomain.com. Only use this
+ ## option is you want to lock down the name in the Host header the client sends.
+  # server {
+  #      server_name  _;  #default
+  #      return 444;
+  #  }
+
+ ## Server (www.)mydomain.com
+  server {
+      add_header  Cache-Control public;
+      access_log  /var/log/nginx/access.log main buffer=32k;
+      error_log   /var/log/nginx/error.log error;
+      expires     max;
+      limit_req   zone=gulag burst=200 nodelay;
+      listen      127.0.0.1:80;
+      root        /htdocs;
+      server_name mydomain.com www.mydomain.com;
+
+     ## Note: if{} sections are expensive to process. Please only use them if you need them
+     ## and take a look lower down on the page for our discussion of if{} statements.
+
+     ## Only allow GET and HEAD request methods. By default Nginx blocks
+     ## all requests type other then GET and HEAD for static content.
+     # if ($request_method !~ ^(GET|HEAD)$ ) {
+     #   return 405;
+     # }
+
+     ## Deny illegal Host headers.
+     # if ($host !~* ^(mydomain.com|www.mydomain.com)$ ) {
+     #  return 405;
+     # }
+
+     ## Deny certain User-Agents (case insensitive)
+     ## The ~* makes it case insensitive as opposed to just a ~
+     # if ($http_user_agent ~* (Baiduspider|Jullo) ) {
+     #  return 405;
+     # }
+
+     ## Deny certain Referers (case insensitive)
+     ## The ~* makes it case insensitive as opposed to just a ~
+     # if ($http_referer ~* (babes|click|diamond|forsale|girl|jewelry|love|nudit|organic|poker|porn|poweroversoftware|sex|teen|video|webcam|zippo) ) {
+     #  return 405;
+     # }
+
+     ## Redirect from www to non-www
+     # if ($host = &apos;www.mydomain.com&apos; ) {
+     #  rewrite  ^/(.*)$  http://mydomain.com/$1  permanent;
+     # }
+
+     ## Stop Image and Document Hijacking
+     #location ~* (\.jpg|\.png|\.css)$ {
+     #   if ($http_referer !~ ^(http://mydomain.com) ) {
+     #     return 405;
+     #   }
+     # }
+
+     ## Restricted Access directory by password in the access_list file.
+      location ^~ /secure/ {
+            allow 127.0.0.1/32;
+
+            deny all;
+            auth_basic &quot;RESTRICTED ACCESS&quot;;
+            auth_basic_user_file /var/www/htdocs/secure/access_list;
+        }
+
+     ## Only allow these full URI paths relative to document root. If you only want
+     ## to reference the file name use $request_filename instead of $request_uri. By default
+     ## nginx will only serve out files in &quot;root /htdocs;&quot; defined above so this block is not needed, just an example.
+     #  if ($request_uri ~* (^\/|\.html|\.jpg|\.org|\.png|\.css|favicon\.ico|robots\.txt)$ ) {
+     #    break;
+     #  }
+     #  return 405;
+
+     ## Serve an empty 1x1 gif _OR_ an error 204 (No Content) for favicon.ico
+      location = /favicon.ico {
+       #empty_gif;
+        return 204;
+      }
+
+      ## System Maintenance (Service Unavailable)
+      if (-f $document_root/system_maintenance.html ) {
+        error_page 503 /system_maintenance.html;
+        return 503;
+      }
+
+     ## All other errors get the generic error page
+      error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 495 496 497
+                 500 501 502 503 504 505 506 507 /error_page.html;
+      location  /error_page.html {
+          internal;
+      }
+  }
+}
+</code></pre><hr>
+
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Nginx/">Nginx</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/nginx/">nginx</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/10/02/2014-10-02-storm-starting/"><span>Storm学习笔记</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/10/02/2014-10-02-storm-starting/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-10-01T16:00:00.000Z">
+          2014-10-02
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>牛逼的产品就是使用起来简单，而自身不简单，Storm就是之一。</p>
+<p><a href="http://qing.blog.sina.com.cn/2294942122/88ca09aa33002dsh.html?sudaref=www.google.com" target="_blank" rel="external">流处理框架Storm简介</a></p>
+<p><a href="http://www.searchtb.com/2012/09/introduction-to-storm.html" target="_blank" rel="external">Storm简介</a></p>
+<p>这些文章写的非常好，做一些学习笔记。</p>
+<p>###介绍</p>
+<p>分主从2种节点，3种不同的Daemon:Nimbus运行在主节点上, 从节点上运行Supervisor，每个从节点上还有一系列的worker process来运行具体任务。Daemon之间的信息交换统统是通过Zookeeper来实现。</p>
+<p>Nimbus，主要负责接收客户端提交的Topology，进行相应的验证，分配任务，进而把任务相关的元信息写入Zookeeper相应目录，还负责通过Zookeeper来监控任务执行情况；</p>
+<p>Supervisor，负责监听Nimbus分配的任务，根据实际情况启动/停止工作进程(Worker)；</p>
+<p>Worker，运行具体处理组件逻辑的进程；</p>
+<p>过程涉及到了3个相关实体：</p>
+<ol>
+<li><p>Worker：一个完整的Topology是由分布在多个节点上的Worker进程来执行的，每个Worker都执行（且仅执行）Topology的一个子集。</p>
+</li>
+<li><p>Executor：在每个Worker内部，会有多个Executor，每个executor对应一个线程。</p>
+</li>
+<li><p>Task：执行具体数据处理的相关实体，也就是用户实现的Spout/Blot实例。Storm中，一个executor可能会对应一个或者多个task。这就是说，系统中executor的数量是小于等于task的数量的。</p>
+</li>
+</ol>
+<p>Storm和Hadoop的对比:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Hadoop</th>
+<th style="text-align:center">Storm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">JobTracker</td>
+<td style="text-align:center">Nimbus</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">TaskTracker</td>
+<td style="text-align:center">Supervisor</td>
+</tr>
+<tr>
+<td style="text-align:center">Child</td>
+<td style="text-align:center">Worker</td>
+</tr>
+<tr>
+<td style="text-align:center">Job</td>
+<td style="text-align:center">Topology</td>
+</tr>
+<tr>
+<td style="text-align:center">Mapper/Reducer</td>
+<td style="text-align:center">Spout/Bolt</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><p>Topology：Storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。</p>
+</li>
+<li><p>Spout：在一个Topology中产生源数据流的组件。通常情况下Spout会从外部数据源中读取数据，然后转换为Topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，Storm框架会不停地调用此函数，用户只要在其中生成源数据即可。</p>
+</li>
+<li><p>Bolt：在一个Topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。</p>
+</li>
+<li><p>Tuple：一次消息传递的基本单元。本来应该是一个Key-Value的map，但是由于各个组件间传递的Tuple的字段名称已经事先定义好，所以Tuple中只要按序填入各个value就行了，所以就是一个value list.</p>
+</li>
+<li><p>Stream：源源不断传递的tuple就组成了Stream。</p>
+</li>
+<li><p>Stream Grouping: Storm中提供若干种实用的grouping方式，包括shuffle, fields hash, all, global, none, direct和localOrShuffle等。</p>
+</li>
+</ol>
+<p>Storm记录级容错的基本原理和事务拓扑可以参考文前的链接文章。</p>
+
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Storm/">Storm</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java/">java</a><a href="/tags/storm/">storm</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/09/20/2014-09-20-centos-with-lvs/"><span>CentOS安装LVS及长连接配置</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/09/20/2014-09-20-centos-with-lvs/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-09-19T16:00:00.000Z">
+          2014-09-20
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>先安装如下软件</p>
+<p><code>yum install ipvsadm</code></p>
+<p><code>yum install keepalived</code></p>
+<p>修改配置/etc/sysctl.conf中，将<code>net.ipv4.ip_forward</code>配置为1：</p>
+<p>net.ipv4.ip_forward = 1</p>
+<p>使用<code>sysctl -p</code>让配置生效</p>
+<p>##NAT模式</p>
+<p><img src="http://www.centos.org/docs/5/html/Virtual_Server_Administration/images/lvs-nat-routing.png" alt="NAT模式"></p>
+<p>配置/etc/keepalived/keepalived.conf文件：</p>
+<pre><code>! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   notification_email_from Alexandre.Cassen@firewall.loc
+   smtp_server 192.168.200.1
+   smtp_connect_timeout 30
+   router_id LVS_MASTER
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.1.222
+    }
+}
+
+
+virtual_server 192.168.1.222 20000{
+    delay_loop 6
+    lb_algo rr
+    lb_kind NAT
+    nat_mask 255.255.255.0
+    persistence_timeout 7200
+    protocol TCP
+
+    real_server 192.168.1.203 20000 {
+        weight 3
+        TCP_CHECK {  
+            connect_timeout 3  
+            nb_get_retry 3  
+            delay_before_retry 3
+            connect_port 20000
+        }  
+    }
+
+   real_server 192.168.1.204 20000 {
+        weight 3
+        TCP_CHECK {  
+            connect_timeout 3  
+            nb_get_retry 3  
+            delay_before_retry 3
+            connect_port 20000
+        }  
+    }
+
+}
+</code></pre><p>将2台real server(192.168.1.203, 192.168.1.204)网关配置为192.168.1.222</p>
+<p>启动keepalived</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service keepalived start</div></pre></td></tr></table></figure>
+<p>通过ipvsadm查看连接状况</p>
+<pre><code>$ ipvsadm -ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  192.168.1.210:dnp rr persistent 7200
+  -&gt; 192.168.1.203:dnp            Masq    3      0          0  
+  -&gt; 192.168.1.204:dnp            Masq    3      0          0  
+</code></pre><p>LVS &amp; keepalived的tcp长连接Connection reset by peer错误</p>
+<p>查看tcp session的超时时间，如果设置比较短，则会报错<br>ipvsadm –list –timeout<br>Timeout (tcp tcpfin udp): 900 120 300<br>表示tcp session的timeout是900秒</p>
+<p>通过–set可以设置timeout时间<br>ipvsadm –set 7200 120 300</p>
+<p>keepalived配置中virtual_server的persistence_timeout, 对于长连接应该配置长一些，可以和LVS的tcp timeout配置一直</p>
+<pre><code>virtual_server 192.168.1.210 20000{
+    delay_loop 6
+    lb_algo rr
+    lb_kind NAT
+    nat_mask 255.255.255.0
+    persistence_timeout 7200
+    protocol TCP
+</code></pre><p>##Direct Routing模式</p>
+<p>理解DR模式的原理非常重要，这样就知道为什么需要封堵ARP消息了</p>
+<p><img src="http://www.centos.org/docs/5/html/Virtual_Server_Administration/images/lvs-direct-routing.png" alt="DR原理"></p>
+<p>可以看出，在返回消息中，返回路径和请求路径不等同，所以需要在RealServer的lo接口上，加上VIP地址</p>
+<pre><code>! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   notification_email_from Alexandre.Cassen@firewall.loc
+   smtp_server 192.168.200.1
+   smtp_connect_timeout 30
+   router_id LVS_MASTER
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 51
+    priority 100
+    #advert_int 1
+    #authentication {
+    #    auth_type PASS
+    #    auth_pass 1111
+    #}
+    virtual_ipaddress {
+        192.168.1.222
+    }
+}
+
+virtual_server 192.168.1.222 80{
+    delay_loop 6
+    lb_algo wrr
+    lb_kind DR
+    nat_mask 255.255.255.0
+    persistence_timeout 7200
+    protocol TCP
+
+   real_server 192.168.1.203 80{
+        weight 3
+        TCP_CHECK {
+            connect_timeout 3
+            nb_get_retry 3
+            delay_before_retry 3
+            connect_port 80
+        }
+   }
+
+   real_server 192.168.1.204 80{
+        weight 3
+        TCP_CHECK {
+            connect_timeout 3
+            nb_get_retry 3
+            delay_before_retry 3
+        connect_port 80
+        }  
+    }
+
+}
+</code></pre><p>同时在RealServer 192.168.1.203, 192.168.1.204上执行如下指令：</p>
+<pre><code>#!/bin/sh
+
+SNS_VIP=192.168.1.222
+. /etc/rc.d/init.d/functions  
+
+case &quot;$1&quot; in  
+start)  
+  ifconfig lo:0 $SNS_VIP netmask 255.255.255.255 broadcast $SNS_VIP  
+  /sbin/route add -host $SNS_VIP dev lo:0  
+  echo &quot;1&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_ignore  
+  echo &quot;2&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_announce  
+  echo &quot;1&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_ignore  
+  echo &quot;2&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_announce  
+  sysctl -p &gt;/dev/null 2&gt;&amp;1  
+  echo &quot;RealServer Start OK&quot;  
+;;  
+stop)  
+  ifconfig lo:0 down  
+  route del $SNS_VIP &gt;/dev/null 2&gt;&amp;1  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_ignore  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_announce  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_ignore  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_announce  
+  echo &quot;RealServer Stoped&quot;  
+;;  
+*)  
+  echo &quot;Usage: $0 {start|stop}&quot;  
+  exit 1  
+esac  
+exit 0
+</code></pre><p>通过ipvsadm -lcn可以查看连接情况，如果出现SYN_RECV状态，多半是ARP问题，请检查ARP或网关是否正确.</p>
+<p>可以通过命令直接增加lvs，类似如下</p>
+<pre><code>ifconfig eth0:0 192.168.1.100 netmask 255.255.255.0 broadcast 192.168.1.255 up
+ipvsadm -C  #清除
+ipvsadm -A -t 192.168.1.100:80 -s wlc
+ipvsadm -a -t 192.168.1.100:80 -r 192.168.1.206:80 -g
+ipvsadm -a -t 192.168.1.100:80 -r 192.168.1.207:3636 -g
+</code></pre>
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/lvs/">lvs</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/centos/">centos</a><a href="/tags/lvs/">lvs</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/09/15/2014-09-15-kafka-cast-b-error/"><span>Kafka错误java.lang.String cannot be cast to [B</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/09/15/2014-09-15-kafka-cast-b-error/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-09-14T16:00:00.000Z">
+          2014-09-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>向kafka发送数据，默认支持String和byte[]2种类型，如何支持呢？serializer是关键。kafka默认包括kafka.serializer.StringEncoder<br>和kafka.serializer.DefaultEncoder 2个类，分别支持String和二进制。在创建Producer时，需要配置参数<code>props.put(&quot;serializer.class&quot;, &quot;kafka.serializer.StringEncoder&quot;);</code></p>
+<p>KeyedMessage将需要发送的进行封装，根据定义的serializer.class，定义不同的<code>KeyedMessage&lt;K,V&gt;</code></p>
+<p>如果需要发送字符串，方式如下：</p>
+<pre><code>import java.util.Properties;
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
+
+//创建Producer
+Properties props = new Properties();
+props.put(&quot;metadata.broker.list&quot;, &quot;192.168.1.1:9092,192.168.1.2:9092 &quot;);
+props.put(&quot;serializer.class&quot;, &quot;kafka.serializer.StringEncoder&quot;);
+props.put(&quot;producer.type&quot;, &quot;sync&quot;);
+//props.put(&quot;reconnect.time.interval.ms&quot;, 5*1000);
+props.put(&quot;request.required.acks&quot;, &quot;1&quot;);
+//props.put(&quot;compression.codec&quot;, &quot;gzip&quot;);
+
+ProducerConfig config = new ProducerConfig(props);
+Producer&lt;String, String&gt; producer = new Producer&lt;String, String&gt;(config);
+
+//发送数据
+
+String message = &quot;hello message&quot;;
+//KeyedMessage&lt;String, String&gt; 第一个String是key的类型，第二个String是value类型
+//可以用key来进行Hash，发送message到不同的分区
+
+KeyedMessage&lt;String, String&gt; keymsg = new KeyedMessage&lt;String, String&gt;(&quot;mytopic&quot;,message);
+//这里的KeyedMessage没有key值
+
+producer.send(keymsg);
+</code></pre><p>发送二进制消息，方式类似，需要修改serializer.class，和key.serializer.class配置</p>
+<pre><code>import java.util.Properties;
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
+
+
+
+//创建Producer
+Properties props = new Properties();
+props.put(&quot;metadata.broker.list&quot;, &quot;192.168.1.1:9092,192.168.1.2:9092 &quot;);
+props.put(&quot;serializer.class&quot;, &quot;kafka.serializer.DefaultEncoder&quot;);
+//key的类型需要和serializer保持一致，如果key是String，则需要配置为kafka.serializer.StringEncoder，如果不配置，默认为kafka.serializer.DefaultEncoder，即二进制格式
+props.put(&quot;key.serializer.class&quot;, &quot;kafka.serializer.StringEncoder&quot;);
+props.put(&quot;producer.type&quot;, &quot;sync&quot;);
+//props.put(&quot;reconnect.time.interval.ms&quot;, 5*1000);
+props.put(&quot;request.required.acks&quot;, &quot;1&quot;);
+//props.put(&quot;compression.codec&quot;, &quot;gzip&quot;);
+
+ProducerConfig config = new ProducerConfig(props);
+Producer&lt;String, byte[]&gt; producer = new Producer&lt;String, byte[]&gt;(config);
+
+//发送数据
+
+String message = &quot;hello message&quot;;
+//KeyedMessage&lt;String, byte[]&gt; 第一个String是key的类型，第二个byte[]是value类型
+//可以用key来进行Hash，发送message到不同的分区
+
+KeyedMessage&lt;String, byte[]&gt; keymsg = new KeyedMessage&lt;String, byte[]&gt;(&quot;mytopic&quot;,message.getBytes());
+//这里的KeyedMessage没有key值
+
+producer.send(keymsg);
+</code></pre><p>如果serializer.class或key.serializer.class配置不正确，就会报如下错误</p>
+<pre><code>java.lang.ClassCastException: java.lang.String cannot be cast to [B
+at kafka.serializer.DefaultEncoder.toBytes(Encoder.scala:34)
+at kafka.producer.async.DefaultEventHandler$$anonfun$serialize$1.apply(DefaultEventHandler.scala:128)
+at kafka.producer.async.DefaultEventHandler$$anonfun$serialize$1.apply(DefaultEventHandler.scala:125)
+at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:233)
+at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:233)
+at scala.collection.Iterator$class.foreach(Iterator.scala:772)
+at scala.collection.JavaConversions$JIteratorWrapper.foreach(JavaConversions.scala:573)
+at scala.collection.IterableLike$class.foreach(IterableLike.scala:73)
+at scala.collection.JavaConversions$JListWrapper.foreach(JavaConversions.scala:615)
+at scala.collection.TraversableLike$class.map(TraversableLike.scala:233)
+at scala.collection.JavaConversions$JListWrapper.map(JavaConversions.scala:615)
+at kafka.producer.async.DefaultEventHandler.serialize(DefaultEventHandler.scala:125)
+at kafka.producer.async.DefaultEventHandler.handle(DefaultEventHandler.scala:52)
+at kafka.producer.Producer.send(Producer.scala:76)
+at kafka.javaapi.producer.Producer.send(Producer.scala:42)
+</code></pre>
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Kafka/">Kafka</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/kafka/">kafka</a><a href="/tags/java/">java</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/09/05/2014-09-05-thrift-in-java/"><span>Thrift序列化和反序列化(JAVA版)</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/09/05/2014-09-05-thrift-in-java/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-09-04T16:00:00.000Z">
+          2014-09-05
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>Thrift支持的类型</p>
+<ul>
+<li>bool: 布尔型 A boolean value (true or false)</li>
+<li>byte: 字节 An 8-bit signed integer</li>
+<li>i16: 16位有符号整数 A 16-bit signed integer</li>
+<li>i32: 32位有符号整数 A 32-bit signed integer</li>
+<li>i64: 64位有符号整数 A 64-bit signed integer</li>
+<li>double: 64为浮点数 A 64-bit floating point number</li>
+<li>string: UTF-8字符串 A text string encoded using UTF-8 encoding</li>
+<li>binary: a sequence of unencoded bytes</li>
+</ul>
+<p>典型的IDL定义文件是这样的</p>
+<pre><code>#thrift
+#demo.thrift
+namespace java com.test.dto
+
+struct DemoMessage {
+    1: string home,
+    2: i32 age,
+    3: string name,
+    4: optional i32 high,
+    5: optional i64 time,
+
+}
+</code></pre><p>通过thrift命令可以生成Java定义文件 <code>thrift --gen java demo.thrift</code></p>
+<p>序列化</p>
+<pre><code>try {
+
+    TMemoryBuffer mb = new TMemoryBuffer(64);
+    TBinaryProtocol proto = new TBinaryProtocol(mb);
+    DemoMessage data = new DemoMessage();
+    data.setHome(&quot;my home address&quot;);
+    data.setName(&quot;sam&quot;);
+    data.setAge(20);
+    //...
+    data.write(proto);
+
+    byte[] bytes = mb.getArray();
+} catch (TException e) {
+    e.printStackTrace();
+}
+</code></pre><p>反序列化</p>
+<pre><code>try {
+    //byte[] bytes = mb.getArray();
+
+    TMemoryBuffer mb = new TMemoryBuffer(64);
+    mb.write(bytes);
+    TBinaryProtocol proto = new TBinaryProtocol(mb);
+
+
+    DemoMessage data = new DemoMessage();
+    data.read(proto);
+
+    System.out.println(data);
+
+} catch (TException e) {
+    e.printStackTrace();
+}
+</code></pre>
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Java/">Java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java/">java</a><a href="/tags/thrift/">thrift</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/08/28/2014-08-28-multi-mapreduce/"><span>多个MapReduce前后依赖的实现方式</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/08/28/2014-08-28-multi-mapreduce/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-08-27T16:00:00.000Z">
+          2014-08-28
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>map1/reduce1的输出结果给map2，reduce2的输出结果给map3，以此类推，实现pipeline流。使用ControlledJob和JobControl，<br>可以进行前后依赖控制：<code>cjob2.addDependingJob(cjob1);</code></p>
+<pre><code>String infile = &quot;input1.txt&quot;
+String outfile = &quot;output.txt&quot;
+JobConf jobconf1 = new JobConf(new Configuration());
+Path in1 = new Path(infile);
+Path out1 = new Path(&quot;/tmp/&quot;);
+FileInputFormat.setInputPaths(jobconf1, in1);
+TextOutputFormat.setOutputPath(jobconf1, out1);
+jobconf1.setJobName(&quot;Job1&quot;);
+jobconf1.setOutputKeyClass(Text.class);
+jobconf1.setOutputValueClass(Text.class);
+jobconf1.setMapperClass(MyMapper1.class);
+jobconf1.setReducerClass(MyReducer1.class);
+jobconf1.setOutputFormat(TextOutputFormat.class);
+Job job1 =  new Job(jobconf1);
+
+JobConf jobconf2 = new JobConf(new Configuration());
+Path out2 = new Path(outfile);
+
+//job1的输出是job2的输入
+FileInputFormat.setInputPaths(jobconf2, out1);
+TextOutputFormat.setOutputPath(jobconf2, out2);
+
+jobconf2.setJobName(&quot;Job2&quot;);
+jobconf2.setOutputKeyClass(Text.class);
+jobconf2.setOutputValueClass(Text.class);
+jobconf2.setMapperClass(MyMapper2.class);
+jobconf2.setReducerClass(MyReducer2.class);
+jobconf2.setOutputFormat(TextOutputFormat.class);
+Job job2 =  new Job(jobconf2);
+
+//通过ControledJob进行前后依赖关系
+ControlledJob cj1 = new ControlledJob(job1, null);
+ControlledJob cj2 = new ControlledJob(job2, null);
+cj2.addDependingJob(cj1);
+JobControl jc = new JobControl(&quot;job&quot;);
+jc.addJob(cj1);
+jc.addJob(cj2);
+jc.run();
+</code></pre>
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Hadoop/">Hadoop</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/hadoop/">hadoop</a><a href="/tags/mapreduce/">mapreduce</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/08/22/2014-08-22-tunning-java/"><span>Java程序的一些优化心得</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/08/22/2014-08-22-tunning-java/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-08-21T16:00:00.000Z">
+          2014-08-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>##JVM参数</p>
+<ul>
+<li><p>高并发使用UseParallelOldGC， -XX:+UseParallelOldGC -XX:-UseAdaptiveSizePolicy</p>
+</li>
+<li><p>大吞吐量使用UseConcMarkSweepGC， -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=65</p>
+</li>
+<li><p>-Xms不能太小， -Xms4g -Xmx5g</p>
+</li>
+</ul>
+<p>##开发中的一些心得</p>
+<ul>
+<li><p>进行并发开发时，多线程不是最好的选择，我把多线程换成了Disruptor框架<a href="http://lmax-exchange.github.io/disruptor/" target="_blank" rel="external">http://lmax-exchange.github.io/disruptor/</a></p>
+</li>
+<li><p>在Disruptor中，尽量减少IO操作，每个Consumer是单线程的，不要让线程Block；为提高吞吐量，任何线程的Block都是不可接收的；能缓存的数据一定要缓存，Redis/Memcache都是不错的选择；如果追求更高的性能，一些数据直接缓存进进程内，去Redis里面读数据都是一种延迟。</p>
+</li>
+<li><p>批量执行的速度会远远超过一个一个的执行，比如从kafka读取数据，或往kafka写数据，比如执行结果需要保存到数据库，如果数据量超过并且数据访问比较频繁，则可以考虑批量保存。将结果保存到MQ中，再将结果异步保存到MySQL或Redis，可以大大提高性能。</p>
+</li>
+<li><p>单线程比想象中的要快很多，前提是没有Block动作</p>
+</li>
+</ul>
+<p>##使用Netty过程中的一些总结</p>
+<ul>
+<li>Linux下，为追求性能，可以使用epoll，即Native Transports。EpollEventLoopGroup替换NioEventLoopGroup，EpollEventLoop替换NioEventLoop，EpollServerSocketChannel替换NioServerSocketChannel，EpollSocketChannel替换NioSocketChannel</li>
+</ul>
+<pre><code>EventLoopGroup bossGroup = new EpollEventLoopGroup(this.bossThreds);
+EventLoopGroup workerGroup = new EpollEventLoopGroup(this.workerThreads);
+
+try {
+
+
+    ServerBootstrap b = new ServerBootstrap();
+    b.group(bossGroup, workerGroup).channel(EpollServerSocketChannel.class).childHandler(serverInitializer);
+
+    b.childOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32 * 1024);
+    b.childOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8 * 1024);
+
+    b.option(ChannelOption.TCP_NODELAY, true);
+    b.option(ChannelOption.SO_KEEPALIVE, true);
+    b.option(ChannelOption.SO_REUSEADDR, true);
+    b.option(ChannelOption.SO_RCVBUF, 1048576);
+    b.option(ChannelOption.SO_SNDBUF, 1048576);
+    b.option(ChannelOption.SO_BACKLOG, 5000);
+    b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+
+
+    b.bind(&quot;0.0.0.0&quot;, port).sync().channel().closeFuture().sync();
+} catch (InterruptedException e) {
+    logger.error(e.getMessage(), e);
+    // e.printStackTrace();
+} finally {
+    bossGroup.shutdownGracefully();
+    workerGroup.shutdownGracefully();
+}
+</code></pre><ul>
+<li><p>开启PooledByteBufAllocator</p>
+</li>
+<li><p>修改TCP参数TCP_NO_DELAY,SO_SNDBUF,SO_RCVBUF</p>
+</li>
+<li><p>为获得更大吞吐量，在ChannelHandler的channelRead中，不要Block线程，执行越快越好</p>
+</li>
+<li><p>在EventLoop中慎用java.util.concurrent中的一些Block性质的操作；数据库操作相当于Block操作，应谨慎使用</p>
+</li>
+<li><p>使用ctx.writeAndFlush(msg); 而不是ctx.channel().writeAndFlush(msg);</p>
+</li>
+<li><p>如果业务无状态，可以在ChannelHandler上使用@ChannelHandler.Sharable，可以减少GC</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">@ChannelHandler.Sharable</div><div class="line">public class StatelessHandler extends ChannelInboundHandlerAdapter &#123;</div></pre></td></tr></table></figure>
+</li>
+<li><p>在encode时，减少内存copy，尽量使用系统的ByteBuf</p>
+</li>
+</ul>
+<pre><code>public class EncodeActsOnByteArray extends MessageToByteEncoder&lt;YourMessage&gt; {
+    public EncodeActsOnByteArray() { super(false); }
+    @Override
+    public encode(ChannelHandlerContext ctx, YourMessage msg, ByteBuf out) {
+      byte[] array = out.array();
+      int offset = out.arrayOffset() + out.writerIndex();
+      out.writeIndex(out.writerIndex() + encode(msg, array, offset));
+    }
+    private int encode(YourMessage msg, byte[] array, int offset, int len) { ... }
+}
+</code></pre>
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Java/">Java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java/">java</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/08/01/2014-08-01-centos-install-juniper-vpn/"><span>CentOS中安装Juniper SSL VPN Client</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/08/01/2014-08-01-centos-install-juniper-vpn/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-07-31T16:00:00.000Z">
+          2014-08-01
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>安装过程比较简单，但如果出现SecurityException之类的错误，就比较麻烦了。</p>
+<p>1.安装Java运行环境(<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="external">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>)</p>
+<p>2.安装Firefox的插件</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd ~/.mozilla/plugins</div><div class="line">ln -s /usr/lib/jvm/jdk1.7.0_60/jre/lib/amd64/libnpjp2.so .</div></pre></td></tr></table></figure>
+</code></pre><p>   这一步如果没有使FireFox的java插件生效，可以安装icedtea-web</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install icedtea-web</div><div class="line">#Debian可以使用apt-get install icedtea-web</div></pre></td></tr></table></figure>
+</code></pre><p>3.确保系统安装了openssl ，通过 <code>rmp -q openssl</code> 检查</p>
+<p>通过Firefox访问需要连接的网络，正常情况就可以连上了。但如果出现SecurityException错误，可能是Java安全级别比较高，可以打开jcontrol，<br>在Security中将Security Level设置为Low（或Medium）</p>
+<p>通过安装ncui访问VPN，安装ncui，可以参考这里 <a href="https://kb.iu.edu/d/bbte" target="_blank" rel="external">https://kb.iu.edu/d/bbte</a></p>
+<p>下载ncui地址: <a href="http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html" target="_blank" rel="external">http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html</a></p>
+<p>访问指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./ncsvc -h xxx.xxx.xxx.xxx -u test -p test -f test.der -r realm -U url_path</div></pre></td></tr></table></figure>
+<p>参考：</p>
+<p><a href="http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86_64/" target="_blank" rel="external">http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86-64/</a></p>
+<p><a href="https://www.centos.org/forums/viewtopic.php?t=1070" target="_blank" rel="external">https://www.centos.org/forums/viewtopic.php?t=1070</a></p>
+<p><a href="http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/" target="_blank" rel="external">http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/</a></p>
+<p>end.</p>
+
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/CentOs/">CentOs</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/centos/">centos</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+  
+
+<article>
+
+  
+    
+    <h3 class="article-title"><a href="/2014/07/22/2014-07-22-how-to-sonar/"><span>如何使用sonar对项目代码质量进行分析</span></a></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/07/22/2014-07-22-how-to-sonar/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-07-21T16:00:00.000Z">
+          2014-07-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  <!-- 
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>对非maven模式的JAVA项目，可以使用sonar-runner分析</p>
+<p><a href="http://www.ituring.com.cn/article/69556" target="_blank" rel="external">http://www.ituring.com.cn/article/69556</a></p>
+<p>过程总结如下：</p>
+<ol>
+<li><p>下载SonarQube， <a href="http://www.sonarqube.org/downloads/" target="_blank" rel="external">http://www.sonarqube.org/downloads/</a>  <a href="http://dist.sonar.codehaus.org/sonarqube-4.3.2.zip" target="_blank" rel="external">http://dist.sonar.codehaus.org/sonarqube-4.3.2.zip</a></p>
+</li>
+<li><p>解压sonarqube-4.3.2.zip，<code>cd sonarqube-4.3.2</code></p>
+</li>
+<li>修改conf下的sonar.properties配置项：</li>
+</ol>
+<pre><code>#修改jdbc的配置
+sonar.jdbc.username=root
+sonar.jdbc.password=admin
+sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8&amp;rewriteBatchedStatements=true
+
+#修改WebServer监听端口
+sonar.web.port=9000
+</code></pre><ol>
+<li>启动Sonar WebServer，第一次启动比较慢，需要初始化数据库表结构。</li>
+</ol>
+<pre><code>    #bin/[OS]/sonar.sh start
+
+    bin/linux-x86-64/sonar.sh start
+
+
+启动过程中，有一个坑就是可能会出现如下错误：
+
+
+    java.lang.IllegalStateException: Unable to read plugin manifest from jar : /opt/sonarqube-4.3.2/lib/bundled-plugins/._sonar-java-plugin-2.1.jar
+    at org.sonar.updatecenter.common.PluginManifest.&lt;init&gt;(PluginManifest.java:115) ~[sonar-update-center-common-1.8.jar:na]
+    at org.sonar.core.plugins.PluginJarInstaller.extractMetadata(PluginJarInstaller.java:64) ~[sonar-core-4.3.2.jar:na]
+    at org.sonar.server.plugins.ServerPluginJarsInstaller.copyBundledPlugins(ServerPluginJarsInstaller.java:110) ~[ServerPluginJarsInstaller.class:na]
+    at org.sonar.server.plugins.ServerPluginJarsInstaller.install(ServerPluginJarsInstaller.java:67) ~[ServerPluginJarsInstaller.class:na]
+    at org.sonar.server.plugins.ServerPluginRepository.start(ServerPluginRepository.java:49) ~[ServerPluginRepository.class:na]
+
+
+
+解决办法就是删除目录下所有的._*.jar文件：
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find . -name &quot;._*.jar&quot; | xargs rm</div></pre></td></tr></table></figure>
+</code></pre><ol>
+<li><p>配置mvn，修改~/.m2下的settings.xml文件：</p>
+<pre><code>&lt;settings&gt;
+    &lt;profiles&gt;
+        &lt;profile&gt;
+            &lt;id&gt;sonar&lt;/id&gt;
+            &lt;activation&gt;
+                &lt;activeByDefault&gt;true&lt;/activeByDefault&gt;
+            &lt;/activation&gt;
+            &lt;properties&gt;
+                &lt;!-- 修改这里 --&gt;
+                &lt;sonar.jdbc.url&gt;
+                  jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
+                &lt;/sonar.jdbc.url&gt;
+                &lt;sonar.jdbc.username&gt;root&lt;/sonar.jdbc.username&gt;
+                &lt;sonar.jdbc.password&gt;admin&lt;/sonar.jdbc.password&gt;
+
+                &lt;!-- Optional URL to server. Default value is http://localhost:9000 --&gt;
+                &lt;!-- 修改这里 --&gt;
+                &lt;sonar.host.url&gt;
+                  http://localhost:9000
+                &lt;/sonar.host.url&gt;
+            &lt;/properties&gt;
+        &lt;/profile&gt;
+     &lt;/profiles&gt;
+&lt;/settings&gt;
+</code></pre></li>
+</ol>
+<ol>
+<li><p>到你的project工程下，执行 mvn sonar:sonar</p>
+</li>
+<li><p>访问<a href="http://localhost:9000，可以看到分析结果。" target="_blank" rel="external">http://localhost:9000，可以看到分析结果。</a></p>
+</li>
+</ol>
+<p>结束。</p>
+
+      
+    </div>
+
+  </div> -->
+
+  <!-- <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java/">java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java/">java</a><a href="/tags/sonar/">sonar</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div> -->
+</article>
+
+
+
+
+
+
+
+<nav class="pagination">
+  
+  
+  <a href="/page/2/" class="pagination-next">Next</a>
+  
+</nav>
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

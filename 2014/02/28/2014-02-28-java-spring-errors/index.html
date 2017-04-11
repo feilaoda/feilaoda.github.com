@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java项目中出现的各种错误的解决办法 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="环境：Tomcat6.0
+######告警：INFO: validateJarFile(servlet-api.jar) - jar not loaded See Servlet Spec 2.3, section 9.7.2. Offending class: javax/servlet/Serv">
+  
+
+  
+  
+  <meta name="keywords" content="Hibernate,Spring">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Java项目中出现的各种错误的解决办法"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Java项目中出现的各种错误的解决办法</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/02/28/2014-02-28-java-spring-errors/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-02-27T16:00:00.000Z">
+          2014-02-28
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>环境：Tomcat6.0</p>
+<p>######告警：INFO: validateJarFile(servlet-api.jar) - jar not loaded See Servlet Spec 2.3, section 9.7.2. Offending class: javax/servlet/Servlet.class</p>
+<p>解决：把/WEB-INF/lib/下的servlet-api.jar删除掉，Tomcat里面已经包含了servlet-api.jar了，重复。</p>
+<p>环境：Hibernate 3.x</p>
+<p>######错误：Caused by: java.lang.NoClassDefFoundError: org/hibernate/annotations/Entity</p>
+<p>解决：在Hibernate3.5以下，使用注解还需要添加hibernate-annotations-3.3.0.jar，hibernate-commons-annotations.jar和ejb3-persistence.jar等，Hibernate3.5版本已经包含了JPA相关的jar，所以直接导入hibernate3（3.5）.jar即可</p>
+<p>环境：Spring3.0.5 tiles2.2.1</p>
+<p>######错误：Caused by: java.lang.ClassNotFoundException: org.apache.tiles.startup.BasicTilesInitializer</p>
+<p>解决：原因是tiles-core2.2.1中该类BasicTilesInitializer已经deprecated了<br>使用如下配置：</p>
+<pre><code>&lt;bean id=&quot;viewResolver&quot;
+    class=&quot;org.springframework.web.servlet.view.UrlBasedViewResolver&quot;&gt;
+    &lt;property name=&quot;viewClass&quot;&gt;
+        &lt;value&gt;
+            org.springframework.web.servlet.view.tiles2.TilesView
+        &lt;/value&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+&lt;bean id=&quot;tilesConfigurer&quot; class=&quot;org.springframework.web.servlet.view.tiles2.TilesConfigurer&quot;&gt;
+    &lt;property name=&quot;definitions&quot;&gt;
+        &lt;list&gt;
+            &lt;value&gt;/WEB-INF/tiles-def.xml&lt;/value&gt;
+        &lt;/list&gt;
+    &lt;/property&gt;
+    &lt;property name=&quot;preparerFactoryClass&quot; value=&quot;org.springframework.web.servlet.view.tiles2.SpringBeanPreparerFactory&quot; /&gt;
+&lt;/bean&gt;
+</code></pre><p>环境：SpringJUnit4ClassRunner.class</p>
+<p>######错误：IOException parsing XML document from class path resource [applicationContext.xml]; 使用classpath:applicationContext.xml找不到XML文件</p>
+<p>解决：把classpath换成file<br>    file:WebRoot/WEB-INF/applicationContext.xml</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Java/">Java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Hibernate/">Hibernate</a><a href="/tags/Spring/">Spring</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

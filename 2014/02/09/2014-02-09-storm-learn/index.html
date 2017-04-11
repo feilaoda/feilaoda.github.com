@@ -1,0 +1,209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Storm学习笔记 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="#Storm
+牛逼的产品就是使用起来简单，而自身内含不简单，Storm就是之一。
+流处理框架Storm简介
+Storm简介
+这些文章写的非常好，做一些学习笔记。
+###介绍
+分主从2种节点，3种不同的Daemon:Nimbus运行在主节点上, 从节点上运行Supervisor，每个从节点上还有一系列">
+  
+
+  
+  
+  <meta name="keywords" content="Storm">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Storm学习笔记"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Storm学习笔记</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/02/09/2014-02-09-storm-learn/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-02-08T16:00:00.000Z">
+          2014-02-09
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>#Storm</p>
+<p>牛逼的产品就是使用起来简单，而自身内含不简单，Storm就是之一。</p>
+<p><a href="http://qing.blog.sina.com.cn/2294942122/88ca09aa33002dsh.html?sudaref=www.google.com" target="_blank" rel="external">流处理框架Storm简介</a></p>
+<p><a href="http://www.searchtb.com/2012/09/introduction-to-storm.html" target="_blank" rel="external">Storm简介</a></p>
+<p>这些文章写的非常好，做一些学习笔记。</p>
+<p>###介绍</p>
+<p>分主从2种节点，3种不同的Daemon:Nimbus运行在主节点上, 从节点上运行Supervisor，每个从节点上还有一系列的worker process来运行具体任务。Daemon之间的信息交换统统是通过Zookeeper来实现。</p>
+<p>Nimbus，主要负责接收客户端提交的Topology，进行相应的验证，分配任务，进而把任务相关的元信息写入Zookeeper相应目录，还负责通过Zookeeper来监控任务执行情况；</p>
+<p>Supervisor，负责监听Nimbus分配的任务，根据实际情况启动/停止工作进程(Worker)；</p>
+<p>Worker，运行具体处理组件逻辑的进程；</p>
+<p>过程涉及到了3个相关实体：</p>
+<ol>
+<li><p>Worker：一个完整的Topology是由分布在多个节点上的Worker进程来执行的，每个Worker都执行（且仅执行）Topology的一个子集。</p>
+</li>
+<li><p>Executor：在每个Worker内部，会有多个Executor，每个executor对应一个线程。</p>
+</li>
+<li><p>Task：执行具体数据处理的相关实体，也就是用户实现的Spout/Blot实例。Storm中，一个executor可能会对应一个或者多个task。这就是说，系统中executor的数量是小于等于task的数量的。</p>
+</li>
+</ol>
+<p>Storm和Hadoop的对比:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Hadoop</th>
+<th style="text-align:center">Storm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">JobTracker</td>
+<td style="text-align:center">Nimbus</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:center">TaskTracker</td>
+<td style="text-align:center">Supervisor</td>
+</tr>
+<tr>
+<td style="text-align:center">Child</td>
+<td style="text-align:center">Worker</td>
+</tr>
+<tr>
+<td style="text-align:center">Job</td>
+<td style="text-align:center">Topology</td>
+</tr>
+<tr>
+<td style="text-align:center">Mapper/Reducer</td>
+<td style="text-align:center">Spout/Bolt</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><p>Topology：Storm中运行的一个实时应用程序，因为各个组件间的消息流动形成逻辑上的一个拓扑结构。</p>
+</li>
+<li><p>Spout：在一个Topology中产生源数据流的组件。通常情况下Spout会从外部数据源中读取数据，然后转换为Topology内部的源数据。Spout是一个主动的角色，其接口中有个nextTuple()函数，Storm框架会不停地调用此函数，用户只要在其中生成源数据即可。</p>
+</li>
+<li><p>Bolt：在一个Topology中接受数据然后执行处理的组件。Bolt可以执行过滤、函数操作、合并、写数据库等任何操作。Bolt是一个被动的角色，其接口中有个execute(Tuple input)函数,在接受到消息后会调用此函数，用户可以在其中执行自己想要的操作。</p>
+</li>
+<li><p>Tuple：一次消息传递的基本单元。本来应该是一个Key-Value的map，但是由于各个组件间传递的Tuple的字段名称已经事先定义好，所以Tuple中只要按序填入各个value就行了，所以就是一个value list.</p>
+</li>
+<li><p>Stream：源源不断传递的tuple就组成了Stream。</p>
+</li>
+<li><p>Stream Grouping: Storm中提供若干种实用的grouping方式，包括shuffle, fields hash, all, global, none, direct和localOrShuffle等。</p>
+</li>
+</ol>
+<p>Storm记录级容错的基本原理和事务拓扑可以参考文前的链接文章。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/bigdata/">bigdata</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Storm/">Storm</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Maven管理多个项目例子? | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="父pom.xml
+&amp;lt;project xmlns=&amp;quot;http://maven.apache.org/POM/4.0.0&amp;quot; xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;  
+        xsi">
+  
+
+  
+  
+  <meta name="keywords" content="Maven">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Maven管理多个项目例子?"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Maven管理多个项目例子?</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2013/10/07/2013-10-07-maven-multi-project/" rel="bookmark">
+        <time class="entry-date published" datetime="2013-10-06T16:00:00.000Z">
+          2013-10-07
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>父pom.xml</p>
+<pre><code>&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;  
+        xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;  
+
+        &lt;!-- 定义公共变量 --&gt;  
+        &lt;properties&gt;  
+            &lt;spring.version&gt;3.1.0.RELEASE&lt;/spring.version&gt;  
+            &lt;hibernate.version&gt;3.5.4-Final&lt;/hibernate.version&gt;  
+        &lt;/properties&gt;  
+
+        &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;  
+        &lt;groupId&gt;com.xxx&lt;/groupId&gt;  
+        &lt;artifactId&gt;com.xxx.platform&lt;/artifactId&gt;  
+        &lt;version&gt;1.0.0&lt;/version&gt;  
+        &lt;packaging&gt;pom&lt;/packaging&gt;  
+
+        &lt;!-- 待聚合模块 --&gt;  
+        &lt;modules&gt;
+             &lt;module&gt;A&lt;/module&gt;
+             &lt;module&gt;B&lt;/module&gt;
+             &lt;module&gt;C&lt;/module&gt;
+
+        &lt;/modules&gt;
+
+        &lt;!-- 配置部署的远程仓库 --&gt;  
+        &lt;!-- &lt;distributionManagement&gt;  
+            &lt;snapshotRepository&gt;  
+                &lt;id&gt;nexus-snapshots&lt;/id&gt;  
+                &lt;name&gt;nexus distribution snapshot repository&lt;/name&gt;  
+                &lt;url&gt;http://10.121.7.20:9090/nexus-2.1.1/content/repositories/snapshots/&lt;/url&gt;  
+            &lt;/snapshotRepository&gt;  
+        &lt;/distributionManagement&gt;   --&gt;
+
+        &lt;build&gt;  
+            &lt;pluginManagement&gt;  
+                &lt;plugins&gt;  
+                    &lt;plugin&gt;  
+                        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;  
+                        &lt;artifactId&gt;maven-resources-plugin&lt;/artifactId&gt;  
+                        &lt;version&gt;2.6&lt;/version&gt;  
+                        &lt;configuration&gt;  
+                            &lt;encoding&gt;UTF-8&lt;/encoding&gt;  
+                        &lt;/configuration&gt;  
+                    &lt;/plugin&gt;  
+
+                    &lt;plugin&gt;  
+                        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;  
+                        &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;  
+                        &lt;version&gt;2.5.1&lt;/version&gt;  
+                        &lt;configuration&gt;  
+                            &lt;encoding&gt;UTF-8&lt;/encoding&gt;  
+                        &lt;/configuration&gt;  
+                    &lt;/plugin&gt;  
+
+                &lt;/plugins&gt;  
+            &lt;/pluginManagement&gt;  
+
+        &lt;/build&gt;  
+
+        &lt;dependencyManagement&gt;  
+            &lt;dependencies&gt;  
+                &lt;!-- &lt;dependency&gt;  
+                    &lt;groupId&gt;com.sun&lt;/groupId&gt;  
+                    &lt;artifactId&gt;tools&lt;/artifactId&gt;  
+                    &lt;version&gt;1.6.0&lt;/version&gt;  
+                    &lt;scope&gt;system&lt;/scope&gt;  
+                    &lt;systemPath&gt;${env.JAVA_HOME}/lib/tools.jar&lt;/systemPath&gt;  
+                &lt;/dependency&gt;   --&gt;
+            &lt;/dependencies&gt;  
+        &lt;/dependencyManagement&gt;  
+    &lt;/project&gt;  
+</code></pre><p>A项目pom.xml</p>
+<pre><code>&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+
+    &lt;parent&gt;
+         &lt;groupId&gt;com.xxx&lt;/groupId&gt;
+         &lt;artifactId&gt;com.xxx.platform&lt;/artifactId&gt;
+         &lt;version&gt;1.0.0&lt;/version&gt;
+         &lt;relativePath&gt;..&lt;/relativePath&gt;
+    &lt;/parent&gt;
+
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;artifactId&gt;com.xxx.base&lt;/artifactId&gt;
+    &lt;packaging&gt;jar&lt;/packaging&gt;
+
+    &lt;name&gt;com.hanmingtech.base&lt;/name&gt;
+    &lt;url&gt;http://maven.apache.org&lt;/url&gt;
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;
+            UTF-8
+        &lt;/project.build.sourceEncoding&gt;
+    &lt;/properties&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;junit&lt;/groupId&gt;
+            &lt;artifactId&gt;junit&lt;/artifactId&gt;
+            &lt;version&gt;4.9&lt;/version&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+                &lt;groupId&gt;commons-beanutils&lt;/groupId&gt;
+                &lt;artifactId&gt;commons-beanutils&lt;/artifactId&gt;
+                &lt;version&gt;1.8.0&lt;/version&gt;
+               &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;displaytag&lt;/groupId&gt;
+            &lt;artifactId&gt;displaytag&lt;/artifactId&gt;
+            &lt;version&gt;1.2&lt;/version&gt;
+            &lt;exclusions&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+                    &lt;artifactId&gt;jcl104-over-slf4j&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+                    &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+                &lt;exclusion&gt;
+                    &lt;!-- 使用外面的 --&gt;
+                    &lt;groupId&gt;commons-beanutils&lt;/groupId&gt;
+                    &lt;artifactId&gt;commons-beanutils&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+                &lt;exclusion&gt;
+                    &lt;groupId&gt;com.lowagie&lt;/groupId&gt;
+                    &lt;artifactId&gt;itext&lt;/artifactId&gt;
+                &lt;/exclusion&gt;
+            &lt;/exclusions&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+            &lt;artifactId&gt;jstl&lt;/artifactId&gt;
+            &lt;version&gt;1.2&lt;/version&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+
+    &lt;/dependencies&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                &lt;version&gt;2.3.2&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;source&gt;1.6&lt;/source&gt;
+                    &lt;target&gt;1.6&lt;/target&gt;
+                    &lt;encoding&gt;UTF-8&lt;/encoding&gt;
+                &lt;/configuration&gt;
+                &lt;executions&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;default-testCompile&lt;/id&gt;
+                        &lt;phase&gt;test-compile&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;testCompile&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                    &lt;execution&gt;
+                        &lt;id&gt;default-compile&lt;/id&gt;
+                        &lt;phase&gt;compile&lt;/phase&gt;
+                        &lt;goals&gt;
+                            &lt;goal&gt;compile&lt;/goal&gt;
+                        &lt;/goals&gt;
+                    &lt;/execution&gt;
+                &lt;/executions&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;
+</code></pre><p><a href="http://www.cnblogs.com/holbrook/archive/2012/12/24/2830519.html" target="_blank" rel="external">http://www.cnblogs.com/holbrook/archive/2012/12/24/2830519.html</a></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/java/">java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Maven/">Maven</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

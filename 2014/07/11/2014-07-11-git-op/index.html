@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Git常用技巧 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="最权威的Git书籍 http://git-scm.com/book/zh
+##Git常用技巧
+###创建本地项目
+123git initgit add README.txtgit commit -m &amp;apos;init project&amp;apos;
+###提交到Remote仓库
+git remote">
+  
+
+  
+  
+  <meta name="keywords" content="git">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Git常用技巧"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Git常用技巧</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/07/11/2014-07-11-git-op/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-07-10T16:00:00.000Z">
+          2014-07-11
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p><strong>最权威的Git书籍 <a href="http://git-scm.com/book/zh" target="_blank" rel="external">http://git-scm.com/book/zh</a></strong></p>
+<p>##Git常用技巧</p>
+<p>###创建本地项目</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git init</div><div class="line">git add README.txt</div><div class="line">git commit -m &apos;init project&apos;</div></pre></td></tr></table></figure>
+<p>###提交到Remote仓库</p>
+<pre><code>git remote add origin https://github.com/wecoders/testproject.git
+git push -u origin master   #提交到master分支(默认为主干)
+</code></pre><p>这里的origin是可以随便定义的，比如定义为mygithub-project</p>
+<pre><code>git remote add mygithub-project https://github.com/wecoders/testproject.git
+</code></pre><p>这样远程名mygithub-project就是代表<a href="https://github.com/wecoders/testproject.git" target="_blank" rel="external">https://github.com/wecoders/testproject.git</a></p>
+<p>###恢复本地被删除的文件</p>
+<p>直接使用checkout指令</p>
+<pre><code>git checkout src/test.java
+</code></pre><p>或者可以批量恢复被删除的文件</p>
+<pre><code>git ls-files -d | xargs git checkout
+</code></pre><p>###根据commits生成patch补丁</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">git log | grep ^commit | head -10   #列出最近10条commit</div><div class="line"></div><div class="line">commit 88093868a6a02c0cf5012465a674c360502ffd0d</div><div class="line">commit e7f11a1fd210c70a4fc1ffb66e85c40e6275aa88</div><div class="line">commit 5d754c56cad45a586d1fb44380c760e925f6e9a4</div><div class="line">commit 23a92f158d4829e6f10b193913c28ad43997c6ed</div><div class="line">commit ed7b6a1067a38ff58f47017d18838d97a9f49086</div><div class="line">commit dfedbb074ac30546bc984f5d05d64ab16d0be3d9</div><div class="line">commit 369f714f1916c4d390defa22b86b8971b4b6c00d</div><div class="line">commit 2fa5f2b86709256e75b62bb03c070e9a967a958b</div><div class="line">commit ebe53e01a5b98bd830a5515c110334aa715b2873</div><div class="line">commit 665739e4d7cc439d4198a80852bb19838a32fc1d</div><div class="line"></div><div class="line">git format-patch 665739e4d7cc439d4198a80852bb19838a32fc1d    #根据665739e4...生成patch</div></pre></td></tr></table></figure>
+<p>###先checkout某个commit，并据此commit创建分支</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git checkout -b branch_test1 665739e4d7cc439d4198a80852bb19838a32fc1d</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Git/">Git</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/git/">git</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

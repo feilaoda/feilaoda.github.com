@@ -1,0 +1,157 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CentOS中安装Juniper SSL VPN Client | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="安装过程比较简单，但如果出现SecurityException之类的错误，就比较麻烦了。
+1.安装Java运行环境(http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+2.安装Firefox的插件
+12cd ~/.m">
+  
+
+  
+  
+  <meta name="keywords" content="centos">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="CentOS中安装Juniper SSL VPN Client"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>CentOS中安装Juniper SSL VPN Client</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/08/01/2014-08-01-centos-install-juniper-vpn/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-07-31T16:00:00.000Z">
+          2014-08-01
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>安装过程比较简单，但如果出现SecurityException之类的错误，就比较麻烦了。</p>
+<p>1.安装Java运行环境(<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="external">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>)</p>
+<p>2.安装Firefox的插件</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd ~/.mozilla/plugins</div><div class="line">ln -s /usr/lib/jvm/jdk1.7.0_60/jre/lib/amd64/libnpjp2.so .</div></pre></td></tr></table></figure>
+</code></pre><p>   这一步如果没有使FireFox的java插件生效，可以安装icedtea-web</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum install icedtea-web</div><div class="line">#Debian可以使用apt-get install icedtea-web</div></pre></td></tr></table></figure>
+</code></pre><p>3.确保系统安装了openssl ，通过 <code>rmp -q openssl</code> 检查</p>
+<p>通过Firefox访问需要连接的网络，正常情况就可以连上了。但如果出现SecurityException错误，可能是Java安全级别比较高，可以打开jcontrol，<br>在Security中将Security Level设置为Low（或Medium）</p>
+<p>通过安装ncui访问VPN，安装ncui，可以参考这里 <a href="https://kb.iu.edu/d/bbte" target="_blank" rel="external">https://kb.iu.edu/d/bbte</a></p>
+<p>下载ncui地址: <a href="http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html" target="_blank" rel="external">http://www.filewatcher.com/m/ncui-6.5R3.1.i386.rpm.1247251-0.html</a></p>
+<p>访问指令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./ncsvc -h xxx.xxx.xxx.xxx -u test -p test -f test.der -r realm -U url_path</div></pre></td></tr></table></figure>
+<p>参考：</p>
+<p><a href="http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86_64/" target="_blank" rel="external">http://www.jaimegago.com/juniper-vpn-client-aka-network-connect-on-rhel-6-x86-64/</a></p>
+<p><a href="https://www.centos.org/forums/viewtopic.php?t=1070" target="_blank" rel="external">https://www.centos.org/forums/viewtopic.php?t=1070</a></p>
+<p><a href="http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/" target="_blank" rel="external">http://mad-scientist.net/welcome-to-the-lab/juniper-network-connect-vpn/</a></p>
+<p>end.</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/CentOs/">CentOs</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/centos/">centos</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

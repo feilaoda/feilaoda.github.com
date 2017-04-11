@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>HBase Book | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="#####HDFS指令查看HDFS目录bin/hdfs dfs -ls hdfs://vm01:9000
+#####HBase操作指令
+启动HBasebin/start-hbase.sh
+HBase lib下面的Hadoop相关的jar不是2.3.0，需要替换成2.3.0的jar包rm lib/ha">
+  
+
+  
+  
+  <meta name="keywords" content="Hadoop,HBase">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="HBase Book"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>HBase Book</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/05/08/2014-05-08-hbase-book/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-05-07T16:00:00.000Z">
+          2014-05-08
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>#####HDFS指令<br>查看HDFS目录<br>bin/hdfs dfs -ls hdfs://vm01:9000</p>
+<p>#####HBase操作指令</p>
+<p>启动HBase<br>bin/start-hbase.sh</p>
+<p>HBase lib下面的Hadoop相关的jar不是2.3.0，需要替换成2.3.0的jar包<br>rm lib/hadoop*.jar</p>
+<p>MAC OS X下<br>find $HADOOP_HOME/share/hadoop/ -name “hadoop*.jar” |grep -v “test” |grep -v “sources.jar” | xargs  -I{} cp {} $HBASE_HOME/lib</p>
+<p>Linux下</p>
+<p>find $HADOOP_HOME/share/hadoop/ -name “hadoop*.jar” |grep -v “test” |grep -v “sources.jar” | xargs  -i cp {} $HBASE_HOME/lib</p>
+<p>create ‘table1’, ‘cf1’</p>
+<p>#####Hive操作</p>
+<p>  $ tar -xzvf hive-x.y.z.tar.gz<br>  $ cd hive-x.y.z<br>  $ export HIVE_HOME=<br>  $ export PATH=$HIVE_HOME/bin:$PATH</p>
+<p>CREATE  EXTERNAL TABLE IF NOT EXISTS <code>history_role_ext</code>(<br>  <code>day</code> string,<br>  <code>grp</code> string,<br>  <code>mac</code> string,<br>  <code>dur</code> double,<br>  <code>role</code> string)<br>PARTITIONED BY (<br>  <code>d</code> string,<br>  <code>g</code> string)<br>ROW FORMAT DELIMITED<br>  FIELDS TERMINATED BY ‘,’<br>STORED AS INPUTFORMAT<br>  ‘org.apache.hadoop.mapred.TextInputFormat’<br>OUTPUTFORMAT<br>  ‘org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat’<br>LOCATION<br>  ‘hdfs://vm01:9000/hive/warehouse/history_role_ext’</p>
+<p>load data local inpath ‘/root/input.txt’ overwrite into table history_role_ext partition(d=’20140513’, g=’all’);</p>
+<p>CREATE  EXTERNAL TABLE IF NOT EXISTS <code>history_role_external</code>(<br>  <code>day</code> string,<br>  <code>grp</code> string,<br>  <code>mac</code> string,<br>  <code>dur</code> double,<br>  <code>role</code> string)<br>PARTITIONED BY (<br>  <code>d</code> string,<br>  <code>g</code> string)<br>ROW FORMAT DELIMITED<br>  FIELDS TERMINATED BY ‘,’<br>STORED AS TEXTFILE<br>LOCATION<br>  ‘hdfs://vm01:9000/hive/warehouse/history_role_external’</p>
+<p>load data local inpath ‘/root/input.txt’ overwrite into table history_role_external partition(d=’20140513’, g=’all’);</p>
+<p>#####Hadoop操作<br>配置Single Node方法 <a href="http://www.alexjf.net/blog/distributed-systems/hadoop-yarn-installation-definitive-guide" target="_blank" rel="external">http://www.alexjf.net/blog/distributed-systems/hadoop-yarn-installation-definitive-guide</a></p>
+<p><a href="http://codesfusion.blogspot.jp/2013/10/hadoop-wordcount-with-new-map-reduce-api.html" target="_blank" rel="external">http://codesfusion.blogspot.jp/2013/10/hadoop-wordcount-with-new-map-reduce-api.html</a></p>
+<h6 id="Start-HDFS-daemons"><a href="#Start-HDFS-daemons" class="headerlink" title="Start HDFS daemons"></a>Start HDFS daemons</h6><p>$HADOOP_PREFIX/bin/hdfs namenode -format</p>
+<h6 id="Start-the-namenode-daemon"><a href="#Start-the-namenode-daemon" class="headerlink" title="Start the namenode daemon"></a>Start the namenode daemon</h6><p>$HADOOP_PREFIX/sbin/hadoop-daemon.sh start namenode</p>
+<h6 id="Start-the-datanode-daemon"><a href="#Start-the-datanode-daemon" class="headerlink" title="Start the datanode daemon"></a>Start the datanode daemon</h6><p>$HADOOP_PREFIX/sbin/hadoop-daemon.sh start datanode</p>
+<h6 id="Start-YARN-daemons"><a href="#Start-YARN-daemons" class="headerlink" title="Start YARN daemons"></a>Start YARN daemons</h6><h6 id="Start-the-resourcemanager-daemon"><a href="#Start-the-resourcemanager-daemon" class="headerlink" title="Start the resourcemanager daemon"></a>Start the resourcemanager daemon</h6><p>$HADOOP_PREFIX/sbin/yarn-daemon.sh start resourcemanager</p>
+<h6 id="Start-the-nodemanager-daemon"><a href="#Start-the-nodemanager-daemon" class="headerlink" title="Start the nodemanager daemon"></a>Start the nodemanager daemon</h6><p>$HADOOP_PREFIX/sbin/yarn-daemon.sh start nodemanager</p>
+<p><a href="http://wenku.baidu.com/view/d282172055270722192ef7ba.html" target="_blank" rel="external">http://wenku.baidu.com/view/d282172055270722192ef7ba.html</a></p>
+<p>#####Git操作</p>
+<p><a href="http://www.infoq.com/cn/news/2011/03/git-adventures-branch-merge" target="_blank" rel="external">http://www.infoq.com/cn/news/2011/03/git-adventures-branch-merge</a></p>
+<p>Hive性能调优</p>
+<p>1、数据存TextFile，查询性能比较慢，使用ORCFile，速度快<br>2、加载数据，先加载TextFile到table1,再重table1加载到table2, table2采用ORCFile格式存储<br>设置reduce job个数, set mapreduce.job.reduces=6;</p>
+<p>MapReduce<br>1、出现Type错误，大部分错误原因是 job.setOutputValueClass(LongWritable.class); 设置不正确。这里的OutputValueClass不是Reduce的Output，而是Map的Output。</p>
+<p>CREATE  EXTERNAL TABLE IF NOT EXISTS <code>history_role</code>(<br>  <code>day</code> string,<br>  <code>grp</code> int,<br>  <code>mac</code> string,<br>  <code>st</code> string,<br>  <code>et</code> string,<br>  <code>dur</code> int,<br>  <code>role</code> int,<br>  <code>fac</code> string)<br>PARTITIONED BY (<br>  <code>d</code> string)<br>ROW FORMAT DELIMITED<br>  FIELDS TERMINATED BY ‘,’<br>STORED AS TEXTFILE<br>LOCATION ‘hdfs://vm01:9000/hive/warehouse/history_role’;</p>
+<p>CREATE  EXTERNAL TABLE IF NOT EXISTS <code>history_role</code>(<br>  <code>day</code> string,<br>  <code>grp</code> int,<br>  <code>mac</code> string,<br>  <code>st</code> string,<br>  <code>et</code> string,<br>  <code>dur</code> int,<br>  <code>role</code> int,<br>  <code>fac</code> string)<br>PARTITIONED BY (<br>  <code>d</code> string)<br>ROW FORMAT DELIMITED<br>  FIELDS TERMINATED BY ‘,’<br>STORED AS TEXTFILE<br>LOCATION ‘hdfs://localhost/hive/warehouse/history_role’;</p>
+<p>CREATE  EXTERNAL TABLE IF NOT EXISTS <code>history_role</code>(<br>  <code>day</code> string,<br>  <code>grp</code> int,<br>  <code>mac</code> string,<br>  <code>st</code> string,<br>  <code>et</code> string,<br>  <code>dur</code> int,<br>  <code>role</code> int,<br>  <code>fac</code> string)<br>PARTITIONED BY (<br>  <code>d</code> string)<br>CLUSTERED BY (day)<br>SORTED BY (grp)<br>INTO 8 BUCKETS<br>ROW FORMAT DELIMITED FIELDS TERMINATED BY ‘,’<br>STORED AS orc tblproperties (“orc.compress”=”NONE”, “orc.row.index.stride”=”10000”, “orc.stripe.size”=”10240000”)</p>
+<p>设置分区<br>set hive.exec.dynamic.partition.mode=nonstrict;</p>
+<p>设置reduce个数<br>set mapreduce.job.reduces=8;</p>
+<p>set set hive.enforce.bucketing=true;<br>set set hive.enforce.sorting=true;</p>
+<p>######从history_role1中加载数据到history_role2</p>
+<p>from history_role_text<br>insert overwrite table history_role<br>partition(d)<br>select day ,grp, mac, dur, role, day, d as d where day = ‘20140515’;</p>
+<p>######load data from local path</p>
+<p>load data local inpath ‘/root/part-00000’ overwrite into table history_role1 partition(d=’20140515’);</p>
+<p>hdfs dfs -ls hdfs://vm01:9000/hive/warehouse/history_role</p>
+<p>load data local inpath ‘/usr/java/data/role/2014-06-13/part-00000’ overwrite into table history_role partition(d=’2014-06-13’);</p>
+<p>LOAD DATA INFILE ‘/root/role.txt’ INTO TABLE <code>historyrole</code><br>FIELDS TERMINATED BY ‘,’<br>OPTIONALLY ENCLOSED BY ‘“‘<br>ESCAPED BY ‘’<br>LINES TERMINATED BY ‘\n’<br>(day, grp, mac, st, et, dur, role, fac)</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/bigdata/">bigdata</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Hadoop/">Hadoop</a><a href="/tags/HBase/">HBase</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java程序的一些优化心得 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="##JVM参数
+
+高并发使用UseParallelOldGC， -XX:+UseParallelOldGC -XX:-UseAdaptiveSizePolicy
+
+大吞吐量使用UseConcMarkSweepGC， -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiat">
+  
+
+  
+  
+  <meta name="keywords" content="java">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Java程序的一些优化心得"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Java程序的一些优化心得</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/08/22/2014-08-22-tunning-java/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-08-21T16:00:00.000Z">
+          2014-08-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>##JVM参数</p>
+<ul>
+<li><p>高并发使用UseParallelOldGC， -XX:+UseParallelOldGC -XX:-UseAdaptiveSizePolicy</p>
+</li>
+<li><p>大吞吐量使用UseConcMarkSweepGC， -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=65</p>
+</li>
+<li><p>-Xms不能太小， -Xms4g -Xmx5g</p>
+</li>
+</ul>
+<p>##开发中的一些心得</p>
+<ul>
+<li><p>进行并发开发时，多线程不是最好的选择，我把多线程换成了Disruptor框架<a href="http://lmax-exchange.github.io/disruptor/" target="_blank" rel="external">http://lmax-exchange.github.io/disruptor/</a></p>
+</li>
+<li><p>在Disruptor中，尽量减少IO操作，每个Consumer是单线程的，不要让线程Block；为提高吞吐量，任何线程的Block都是不可接收的；能缓存的数据一定要缓存，Redis/Memcache都是不错的选择；如果追求更高的性能，一些数据直接缓存进进程内，去Redis里面读数据都是一种延迟。</p>
+</li>
+<li><p>批量执行的速度会远远超过一个一个的执行，比如从kafka读取数据，或往kafka写数据，比如执行结果需要保存到数据库，如果数据量超过并且数据访问比较频繁，则可以考虑批量保存。将结果保存到MQ中，再将结果异步保存到MySQL或Redis，可以大大提高性能。</p>
+</li>
+<li><p>单线程比想象中的要快很多，前提是没有Block动作</p>
+</li>
+</ul>
+<p>##使用Netty过程中的一些总结</p>
+<ul>
+<li>Linux下，为追求性能，可以使用epoll，即Native Transports。EpollEventLoopGroup替换NioEventLoopGroup，EpollEventLoop替换NioEventLoop，EpollServerSocketChannel替换NioServerSocketChannel，EpollSocketChannel替换NioSocketChannel</li>
+</ul>
+<pre><code>EventLoopGroup bossGroup = new EpollEventLoopGroup(this.bossThreds);
+EventLoopGroup workerGroup = new EpollEventLoopGroup(this.workerThreads);
+
+try {
+
+
+    ServerBootstrap b = new ServerBootstrap();
+    b.group(bossGroup, workerGroup).channel(EpollServerSocketChannel.class).childHandler(serverInitializer);
+
+    b.childOption(ChannelOption.WRITE_BUFFER_HIGH_WATER_MARK, 32 * 1024);
+    b.childOption(ChannelOption.WRITE_BUFFER_LOW_WATER_MARK, 8 * 1024);
+
+    b.option(ChannelOption.TCP_NODELAY, true);
+    b.option(ChannelOption.SO_KEEPALIVE, true);
+    b.option(ChannelOption.SO_REUSEADDR, true);
+    b.option(ChannelOption.SO_RCVBUF, 1048576);
+    b.option(ChannelOption.SO_SNDBUF, 1048576);
+    b.option(ChannelOption.SO_BACKLOG, 5000);
+    b.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+
+
+    b.bind(&quot;0.0.0.0&quot;, port).sync().channel().closeFuture().sync();
+} catch (InterruptedException e) {
+    logger.error(e.getMessage(), e);
+    // e.printStackTrace();
+} finally {
+    bossGroup.shutdownGracefully();
+    workerGroup.shutdownGracefully();
+}
+</code></pre><ul>
+<li><p>开启PooledByteBufAllocator</p>
+</li>
+<li><p>修改TCP参数TCP_NO_DELAY,SO_SNDBUF,SO_RCVBUF</p>
+</li>
+<li><p>为获得更大吞吐量，在ChannelHandler的channelRead中，不要Block线程，执行越快越好</p>
+</li>
+<li><p>在EventLoop中慎用java.util.concurrent中的一些Block性质的操作；数据库操作相当于Block操作，应谨慎使用</p>
+</li>
+<li><p>使用ctx.writeAndFlush(msg); 而不是ctx.channel().writeAndFlush(msg);</p>
+</li>
+<li><p>如果业务无状态，可以在ChannelHandler上使用@ChannelHandler.Sharable，可以减少GC</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">@ChannelHandler.Sharable</div><div class="line">public class StatelessHandler extends ChannelInboundHandlerAdapter &#123;</div></pre></td></tr></table></figure>
+</li>
+<li><p>在encode时，减少内存copy，尽量使用系统的ByteBuf</p>
+</li>
+</ul>
+<pre><code>public class EncodeActsOnByteArray extends MessageToByteEncoder&lt;YourMessage&gt; {
+    public EncodeActsOnByteArray() { super(false); }
+    @Override
+    public encode(ChannelHandlerContext ctx, YourMessage msg, ByteBuf out) {
+      byte[] array = out.array();
+      int offset = out.arrayOffset() + out.writerIndex();
+      out.writeIndex(out.writerIndex() + encode(msg, array, offset));
+    }
+    private int encode(YourMessage msg, byte[] array, int offset, int len) { ... }
+}
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Java/">Java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java/">java</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

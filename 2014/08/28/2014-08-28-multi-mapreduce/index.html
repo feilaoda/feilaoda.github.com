@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>多个MapReduce前后依赖的实现方式 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="map1/reduce1的输出结果给map2，reduce2的输出结果给map3，以此类推，实现pipeline流。使用ControlledJob和JobControl，可以进行前后依赖控制：cjob2.addDependingJob(cjob1);
+String infile = &amp;quot;in">
+  
+
+  
+  
+  <meta name="keywords" content="hadoop,mapreduce">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="多个MapReduce前后依赖的实现方式"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>多个MapReduce前后依赖的实现方式</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/08/28/2014-08-28-multi-mapreduce/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-08-27T16:00:00.000Z">
+          2014-08-28
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>map1/reduce1的输出结果给map2，reduce2的输出结果给map3，以此类推，实现pipeline流。使用ControlledJob和JobControl，<br>可以进行前后依赖控制：<code>cjob2.addDependingJob(cjob1);</code></p>
+<pre><code>String infile = &quot;input1.txt&quot;
+String outfile = &quot;output.txt&quot;
+JobConf jobconf1 = new JobConf(new Configuration());
+Path in1 = new Path(infile);
+Path out1 = new Path(&quot;/tmp/&quot;);
+FileInputFormat.setInputPaths(jobconf1, in1);
+TextOutputFormat.setOutputPath(jobconf1, out1);
+jobconf1.setJobName(&quot;Job1&quot;);
+jobconf1.setOutputKeyClass(Text.class);
+jobconf1.setOutputValueClass(Text.class);
+jobconf1.setMapperClass(MyMapper1.class);
+jobconf1.setReducerClass(MyReducer1.class);
+jobconf1.setOutputFormat(TextOutputFormat.class);
+Job job1 =  new Job(jobconf1);
+
+JobConf jobconf2 = new JobConf(new Configuration());
+Path out2 = new Path(outfile);
+
+//job1的输出是job2的输入
+FileInputFormat.setInputPaths(jobconf2, out1);
+TextOutputFormat.setOutputPath(jobconf2, out2);
+
+jobconf2.setJobName(&quot;Job2&quot;);
+jobconf2.setOutputKeyClass(Text.class);
+jobconf2.setOutputValueClass(Text.class);
+jobconf2.setMapperClass(MyMapper2.class);
+jobconf2.setReducerClass(MyReducer2.class);
+jobconf2.setOutputFormat(TextOutputFormat.class);
+Job job2 =  new Job(jobconf2);
+
+//通过ControledJob进行前后依赖关系
+ControlledJob cj1 = new ControlledJob(job1, null);
+ControlledJob cj2 = new ControlledJob(job2, null);
+cj2.addDependingJob(cj1);
+JobControl jc = new JobControl(&quot;job&quot;);
+jc.addJob(cj1);
+jc.addJob(cj2);
+jc.run();
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Hadoop/">Hadoop</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/hadoop/">hadoop</a><a href="/tags/mapreduce/">mapreduce</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

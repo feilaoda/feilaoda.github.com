@@ -1,0 +1,209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Node.js 和 Socket.io 入门教程 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="安装Nodejs：
+nodejs有自己的包管理工具，叫npm，通过npm管理依赖包，相当的方便。安装nodejs也是比较方便，Ubuntu上直接用：
+apt-get install nodejs
+Debian系统：
+Node.js在官方的Debian Sid(unstable).中已经有了，可以直接">
+  
+
+  
+  
+  <meta name="keywords" content="Node.js,Socket.io,Javascript">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Node.js 和 Socket.io 入门教程"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Node.js 和 Socket.io 入门教程</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2012/03/22/2012-03-22-node-js-socket-io-start/" rel="bookmark">
+        <time class="entry-date published" datetime="2012-03-21T16:00:00.000Z">
+          2012-03-22
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p><strong>安装Nodejs：</strong></p>
+<p>nodejs有自己的包管理工具，叫npm，通过npm管理依赖包，相当的方便。安装nodejs也是比较方便，Ubuntu上直接用：</p>
+<pre><code>apt-get install nodejs
+</code></pre><p><strong>Debian系统：</strong></p>
+<p>Node.js在官方的Debian Sid(unstable).中已经有了，可以直接通过apt-get安装，首先检查apt-get的source文件/etc/apt/source.list中是不是已经包含</p>
+<pre><code>deb http://ftp.us.debian.org/debian/ sid main
+</code></pre><p>可以通过如下方式安装：</p>
+<pre><code>root@host: ~ # echo deb http://ftp.us.debian.org/debian/ sid main &gt; /etc/apt/sources.list.d/sid.list
+root@host: ~ # apt-get update
+root@host: ~ # apt-get install nodejs
+</code></pre><p>详细的安装信息这里有： <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager" target="_blank" rel="external">https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager</a></p>
+<p><strong>安装Socket.io：</strong></p>
+<p>开发Node.js程序当然离不开Socket.io，安装Socket.io也是比较的简单：<br>Ubuntu系统，先安装npm包：</p>
+<pre><code>apt-get install npm
+</code></pre><p>安装npm包后，就可以通过npm包安装Socket.io了：   </p>
+<pre><code>npm  install socket.io
+</code></pre><p><strong>开发入门：</strong></p>
+<p>socket.io主页上有不少的例子，这里是自己整理的一个例子，服务器每隔2秒向客户端发送一条消息的例子：</p>
+<p>Server: <strong>server.js</strong></p>
+<pre><code>var app = require(&apos;http&apos;).createServer(handler),
+    io = require(&apos;socket.io&apos;).listen(app),
+    fs = require(&apos;fs&apos;);
+
+app.listen(8080);
+function handler (req, res) {
+      fs.readFile(__dirname + &apos;/index.html&apos;,
+      function (err, data) {
+        if (err) {
+          res.writeHead(500);
+          return res.end(&apos;Error loading index.html&apos;);
+        }
+        res.writeHead(200);
+        res.end(data);
+      });
+}
+
+io.sockets.on(&apos;connection&apos;, function (socket) {
+        io.sockets.emit(&apos;news&apos;,  &apos;welcome to nodejs&apos;);
+     var tweets = setInterval(function () {
+      socket.emit(&apos;news&apos;, &apos;bieber tweet ok&apos;);
+      }, 2000);
+
+      socket.on(&apos;disconnect&apos;, function () {
+        clearInterval(tweets);
+        io.sockets.emit(&apos;user disconnected&apos;);
+      });
+});
+</code></pre><p>Client: <strong>index.html</strong></p>
+<pre><code>&lt;html&gt;
+    &lt;head&gt;
+        &lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;/socket.io/socket.io.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+  var socket = io.connect(&apos;http://localhost/&apos;);
+  socket.on(&apos;news&apos;, function (data) {
+      console.log(data);
+      $(&quot;#alarm&quot;).append(data).append(&apos;&lt;br/&gt;&apos;);
+    socket.emit(&apos;my other event&apos;, { my: &apos;data&apos; });
+  });
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;alarm&quot;&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>server.js和index.html放到同一个目录下，然后启动：</p>
+<pre><code>&gt; node server.js
+</code></pre><p>在浏览器上访问: <a href="http://127.0.0.1:8080/" target="_blank" rel="external">http://127.0.0.1:8080/</a> 即可看到客户端不断的有数据更新。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/nodejs/">nodejs</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/Node-js/">Node.js</a><a href="/tags/Socket-io/">Socket.io</a><a href="/tags/Javascript/">Javascript</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

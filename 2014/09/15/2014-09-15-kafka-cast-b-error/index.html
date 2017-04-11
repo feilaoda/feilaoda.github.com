@@ -1,0 +1,216 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Kafka错误java.lang.String cannot be cast to [B | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="向kafka发送数据，默认支持String和byte[]2种类型，如何支持呢？serializer是关键。kafka默认包括kafka.serializer.StringEncoder和kafka.serializer.DefaultEncoder 2个类，分别支持String和二进制。在创建Pro">
+  
+
+  
+  
+  <meta name="keywords" content="kafka,java">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Kafka错误java.lang.String cannot be cast to [B"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Kafka错误java.lang.String cannot be cast to [B</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/09/15/2014-09-15-kafka-cast-b-error/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-09-14T16:00:00.000Z">
+          2014-09-15
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>向kafka发送数据，默认支持String和byte[]2种类型，如何支持呢？serializer是关键。kafka默认包括kafka.serializer.StringEncoder<br>和kafka.serializer.DefaultEncoder 2个类，分别支持String和二进制。在创建Producer时，需要配置参数<code>props.put(&quot;serializer.class&quot;, &quot;kafka.serializer.StringEncoder&quot;);</code></p>
+<p>KeyedMessage将需要发送的进行封装，根据定义的serializer.class，定义不同的<code>KeyedMessage&lt;K,V&gt;</code></p>
+<p>如果需要发送字符串，方式如下：</p>
+<pre><code>import java.util.Properties;
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
+
+//创建Producer
+Properties props = new Properties();
+props.put(&quot;metadata.broker.list&quot;, &quot;192.168.1.1:9092,192.168.1.2:9092 &quot;);
+props.put(&quot;serializer.class&quot;, &quot;kafka.serializer.StringEncoder&quot;);
+props.put(&quot;producer.type&quot;, &quot;sync&quot;);
+//props.put(&quot;reconnect.time.interval.ms&quot;, 5*1000);
+props.put(&quot;request.required.acks&quot;, &quot;1&quot;);
+//props.put(&quot;compression.codec&quot;, &quot;gzip&quot;);
+
+ProducerConfig config = new ProducerConfig(props);
+Producer&lt;String, String&gt; producer = new Producer&lt;String, String&gt;(config);
+
+//发送数据
+
+String message = &quot;hello message&quot;;
+//KeyedMessage&lt;String, String&gt; 第一个String是key的类型，第二个String是value类型
+//可以用key来进行Hash，发送message到不同的分区
+
+KeyedMessage&lt;String, String&gt; keymsg = new KeyedMessage&lt;String, String&gt;(&quot;mytopic&quot;,message);
+//这里的KeyedMessage没有key值
+
+producer.send(keymsg);
+</code></pre><p>发送二进制消息，方式类似，需要修改serializer.class，和key.serializer.class配置</p>
+<pre><code>import java.util.Properties;
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
+
+
+
+//创建Producer
+Properties props = new Properties();
+props.put(&quot;metadata.broker.list&quot;, &quot;192.168.1.1:9092,192.168.1.2:9092 &quot;);
+props.put(&quot;serializer.class&quot;, &quot;kafka.serializer.DefaultEncoder&quot;);
+//key的类型需要和serializer保持一致，如果key是String，则需要配置为kafka.serializer.StringEncoder，如果不配置，默认为kafka.serializer.DefaultEncoder，即二进制格式
+props.put(&quot;key.serializer.class&quot;, &quot;kafka.serializer.StringEncoder&quot;);
+props.put(&quot;producer.type&quot;, &quot;sync&quot;);
+//props.put(&quot;reconnect.time.interval.ms&quot;, 5*1000);
+props.put(&quot;request.required.acks&quot;, &quot;1&quot;);
+//props.put(&quot;compression.codec&quot;, &quot;gzip&quot;);
+
+ProducerConfig config = new ProducerConfig(props);
+Producer&lt;String, byte[]&gt; producer = new Producer&lt;String, byte[]&gt;(config);
+
+//发送数据
+
+String message = &quot;hello message&quot;;
+//KeyedMessage&lt;String, byte[]&gt; 第一个String是key的类型，第二个byte[]是value类型
+//可以用key来进行Hash，发送message到不同的分区
+
+KeyedMessage&lt;String, byte[]&gt; keymsg = new KeyedMessage&lt;String, byte[]&gt;(&quot;mytopic&quot;,message.getBytes());
+//这里的KeyedMessage没有key值
+
+producer.send(keymsg);
+</code></pre><p>如果serializer.class或key.serializer.class配置不正确，就会报如下错误</p>
+<pre><code>java.lang.ClassCastException: java.lang.String cannot be cast to [B
+at kafka.serializer.DefaultEncoder.toBytes(Encoder.scala:34)
+at kafka.producer.async.DefaultEventHandler$$anonfun$serialize$1.apply(DefaultEventHandler.scala:128)
+at kafka.producer.async.DefaultEventHandler$$anonfun$serialize$1.apply(DefaultEventHandler.scala:125)
+at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:233)
+at scala.collection.TraversableLike$$anonfun$map$1.apply(TraversableLike.scala:233)
+at scala.collection.Iterator$class.foreach(Iterator.scala:772)
+at scala.collection.JavaConversions$JIteratorWrapper.foreach(JavaConversions.scala:573)
+at scala.collection.IterableLike$class.foreach(IterableLike.scala:73)
+at scala.collection.JavaConversions$JListWrapper.foreach(JavaConversions.scala:615)
+at scala.collection.TraversableLike$class.map(TraversableLike.scala:233)
+at scala.collection.JavaConversions$JListWrapper.map(JavaConversions.scala:615)
+at kafka.producer.async.DefaultEventHandler.serialize(DefaultEventHandler.scala:125)
+at kafka.producer.async.DefaultEventHandler.handle(DefaultEventHandler.scala:52)
+at kafka.producer.Producer.send(Producer.scala:76)
+at kafka.javaapi.producer.Producer.send(Producer.scala:42)
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Kafka/">Kafka</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/kafka/">kafka</a><a href="/tags/java/">java</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

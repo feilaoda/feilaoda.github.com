@@ -1,0 +1,335 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CentOS安装LVS及长连接配置 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="先安装如下软件
+yum install ipvsadm
+yum install keepalived
+修改配置/etc/sysctl.conf中，将net.ipv4.ip_forward配置为1：
+net.ipv4.ip_forward = 1
+使用sysctl -p让配置生效
+##NAT模式
+
+配">
+  
+
+  
+  
+  <meta name="keywords" content="centos,lvs">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="CentOS安装LVS及长连接配置"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>CentOS安装LVS及长连接配置</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/09/20/2014-09-20-centos-with-lvs/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-09-19T16:00:00.000Z">
+          2014-09-20
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>先安装如下软件</p>
+<p><code>yum install ipvsadm</code></p>
+<p><code>yum install keepalived</code></p>
+<p>修改配置/etc/sysctl.conf中，将<code>net.ipv4.ip_forward</code>配置为1：</p>
+<p>net.ipv4.ip_forward = 1</p>
+<p>使用<code>sysctl -p</code>让配置生效</p>
+<p>##NAT模式</p>
+<p><img src="http://www.centos.org/docs/5/html/Virtual_Server_Administration/images/lvs-nat-routing.png" alt="NAT模式"></p>
+<p>配置/etc/keepalived/keepalived.conf文件：</p>
+<pre><code>! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   notification_email_from Alexandre.Cassen@firewall.loc
+   smtp_server 192.168.200.1
+   smtp_connect_timeout 30
+   router_id LVS_MASTER
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.1.222
+    }
+}
+
+
+virtual_server 192.168.1.222 20000{
+    delay_loop 6
+    lb_algo rr
+    lb_kind NAT
+    nat_mask 255.255.255.0
+    persistence_timeout 7200
+    protocol TCP
+
+    real_server 192.168.1.203 20000 {
+        weight 3
+        TCP_CHECK {  
+            connect_timeout 3  
+            nb_get_retry 3  
+            delay_before_retry 3
+            connect_port 20000
+        }  
+    }
+
+   real_server 192.168.1.204 20000 {
+        weight 3
+        TCP_CHECK {  
+            connect_timeout 3  
+            nb_get_retry 3  
+            delay_before_retry 3
+            connect_port 20000
+        }  
+    }
+
+}
+</code></pre><p>将2台real server(192.168.1.203, 192.168.1.204)网关配置为192.168.1.222</p>
+<p>启动keepalived</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">service keepalived start</div></pre></td></tr></table></figure>
+<p>通过ipvsadm查看连接状况</p>
+<pre><code>$ ipvsadm -ln
+IP Virtual Server version 1.2.1 (size=4096)
+Prot LocalAddress:Port Scheduler Flags
+  -&gt; RemoteAddress:Port           Forward Weight ActiveConn InActConn
+TCP  192.168.1.210:dnp rr persistent 7200
+  -&gt; 192.168.1.203:dnp            Masq    3      0          0  
+  -&gt; 192.168.1.204:dnp            Masq    3      0          0  
+</code></pre><p>LVS &amp; keepalived的tcp长连接Connection reset by peer错误</p>
+<p>查看tcp session的超时时间，如果设置比较短，则会报错<br>ipvsadm –list –timeout<br>Timeout (tcp tcpfin udp): 900 120 300<br>表示tcp session的timeout是900秒</p>
+<p>通过–set可以设置timeout时间<br>ipvsadm –set 7200 120 300</p>
+<p>keepalived配置中virtual_server的persistence_timeout, 对于长连接应该配置长一些，可以和LVS的tcp timeout配置一直</p>
+<pre><code>virtual_server 192.168.1.210 20000{
+    delay_loop 6
+    lb_algo rr
+    lb_kind NAT
+    nat_mask 255.255.255.0
+    persistence_timeout 7200
+    protocol TCP
+</code></pre><p>##Direct Routing模式</p>
+<p>理解DR模式的原理非常重要，这样就知道为什么需要封堵ARP消息了</p>
+<p><img src="http://www.centos.org/docs/5/html/Virtual_Server_Administration/images/lvs-direct-routing.png" alt="DR原理"></p>
+<p>可以看出，在返回消息中，返回路径和请求路径不等同，所以需要在RealServer的lo接口上，加上VIP地址</p>
+<pre><code>! Configuration File for keepalived
+
+global_defs {
+   notification_email {
+     acassen@firewall.loc
+     failover@firewall.loc
+     sysadmin@firewall.loc
+   }
+   notification_email_from Alexandre.Cassen@firewall.loc
+   smtp_server 192.168.200.1
+   smtp_connect_timeout 30
+   router_id LVS_MASTER
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    virtual_router_id 51
+    priority 100
+    #advert_int 1
+    #authentication {
+    #    auth_type PASS
+    #    auth_pass 1111
+    #}
+    virtual_ipaddress {
+        192.168.1.222
+    }
+}
+
+virtual_server 192.168.1.222 80{
+    delay_loop 6
+    lb_algo wrr
+    lb_kind DR
+    nat_mask 255.255.255.0
+    persistence_timeout 7200
+    protocol TCP
+
+   real_server 192.168.1.203 80{
+        weight 3
+        TCP_CHECK {
+            connect_timeout 3
+            nb_get_retry 3
+            delay_before_retry 3
+            connect_port 80
+        }
+   }
+
+   real_server 192.168.1.204 80{
+        weight 3
+        TCP_CHECK {
+            connect_timeout 3
+            nb_get_retry 3
+            delay_before_retry 3
+        connect_port 80
+        }  
+    }
+
+}
+</code></pre><p>同时在RealServer 192.168.1.203, 192.168.1.204上执行如下指令：</p>
+<pre><code>#!/bin/sh
+
+SNS_VIP=192.168.1.222
+. /etc/rc.d/init.d/functions  
+
+case &quot;$1&quot; in  
+start)  
+  ifconfig lo:0 $SNS_VIP netmask 255.255.255.255 broadcast $SNS_VIP  
+  /sbin/route add -host $SNS_VIP dev lo:0  
+  echo &quot;1&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_ignore  
+  echo &quot;2&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_announce  
+  echo &quot;1&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_ignore  
+  echo &quot;2&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_announce  
+  sysctl -p &gt;/dev/null 2&gt;&amp;1  
+  echo &quot;RealServer Start OK&quot;  
+;;  
+stop)  
+  ifconfig lo:0 down  
+  route del $SNS_VIP &gt;/dev/null 2&gt;&amp;1  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_ignore  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/lo/arp_announce  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_ignore  
+  echo &quot;0&quot; &gt;/proc/sys/net/ipv4/conf/all/arp_announce  
+  echo &quot;RealServer Stoped&quot;  
+;;  
+*)  
+  echo &quot;Usage: $0 {start|stop}&quot;  
+  exit 1  
+esac  
+exit 0
+</code></pre><p>通过ipvsadm -lcn可以查看连接情况，如果出现SYN_RECV状态，多半是ARP问题，请检查ARP或网关是否正确.</p>
+<p>可以通过命令直接增加lvs，类似如下</p>
+<pre><code>ifconfig eth0:0 192.168.1.100 netmask 255.255.255.0 broadcast 192.168.1.255 up
+ipvsadm -C  #清除
+ipvsadm -A -t 192.168.1.100:80 -s wlc
+ipvsadm -a -t 192.168.1.100:80 -r 192.168.1.206:80 -g
+ipvsadm -a -t 192.168.1.100:80 -r 192.168.1.207:3636 -g
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/lvs/">lvs</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/centos/">centos</a><a href="/tags/lvs/">lvs</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

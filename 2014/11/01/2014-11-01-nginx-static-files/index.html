@@ -1,0 +1,304 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Nginx配置静态文件服务器方法 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="该配置可以轻松支撑每分钟上千的请求，并用一些安全方面的设置，这里作一些记录。
+配置文件 nginx.conf
+
+#worker进程的数量
+worker_processes  3;
+
+#worker进程可以打开的最大文件句柄数
+#worker_rlimit_nofile 1024;
+
+events {">
+  
+
+  
+  
+  <meta name="keywords" content="nginx">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Nginx配置静态文件服务器方法"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Nginx配置静态文件服务器方法</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/11/01/2014-11-01-nginx-static-files/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-10-31T16:00:00.000Z">
+          2014-11-01
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>该配置可以轻松支撑每分钟上千的请求，并用一些安全方面的设置，这里作一些记录。</p>
+<p>配置文件 nginx.conf</p>
+<hr>
+<pre><code>#worker进程的数量
+worker_processes  3;
+
+#worker进程可以打开的最大文件句柄数
+#worker_rlimit_nofile 1024;
+
+events {
+    worker_connections  64;
+}
+
+http {
+
+ ## Size Limits
+ #
+ #client_body_buffer_size   8k;
+ #client_header_buffer_size 1k;
+ #client_max_body_size      1m;
+ #large_client_header_buffers 4 4k/8k;
+
+ ## Timeouts
+ #client_body_timeout     60;
+ #client_header_timeout   60;
+  keepalive_timeout       300 300;
+ #send_timeout            60;
+
+ ## General Options
+  charset                 utf-8;
+  default_type            application/octet-stream;
+  ignore_invalid_headers  on;
+  include                 /etc/mime.types;
+  keepalive_requests      20;
+ #keepalive_disable       msie6;
+  max_ranges              0;
+ #open_file_cache         max=1000 inactive=1h;
+ #open_file_cache_errors  on;
+ #open_file_cache_min_uses 3;
+ #open_file_cache_valid   1m;
+  recursive_error_pages   on;
+  sendfile                on;
+  server_tokens           off;
+ #server_name_in_redirect on;
+  source_charset          utf-8;
+ #tcp_nodelay             on;
+ #tcp_nopush              off;
+
+ ## Request limits
+  limit_req_zone  $binary_remote_addr  zone=gulag:1m   rate=60r/m;
+
+ ## Compression
+  gzip              on;
+  gzip_static       on;
+ #gzip_buffers      16 8k;
+ #gzip_comp_level   1;
+ #gzip_http_version 1.0;
+ #gzip_min_length   0;
+ #gzip_types        text/plain text/html text/css image/x-icon image/bmp;
+  gzip_vary         on;
+
+ ## Log Format
+  log_format  main  &apos;$remote_addr $host $remote_user [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; $ssl_cipher $request_time&apos;;
+
+ ## Deny access to any host other than (www.)mydomain.com. Only use this
+ ## option is you want to lock down the name in the Host header the client sends.
+  # server {
+  #      server_name  _;  #default
+  #      return 444;
+  #  }
+
+ ## Server (www.)mydomain.com
+  server {
+      add_header  Cache-Control public;
+      access_log  /var/log/nginx/access.log main buffer=32k;
+      error_log   /var/log/nginx/error.log error;
+      expires     max;
+      limit_req   zone=gulag burst=200 nodelay;
+      listen      127.0.0.1:80;
+      root        /htdocs;
+      server_name mydomain.com www.mydomain.com;
+
+     ## Note: if{} sections are expensive to process. Please only use them if you need them
+     ## and take a look lower down on the page for our discussion of if{} statements.
+
+     ## Only allow GET and HEAD request methods. By default Nginx blocks
+     ## all requests type other then GET and HEAD for static content.
+     # if ($request_method !~ ^(GET|HEAD)$ ) {
+     #   return 405;
+     # }
+
+     ## Deny illegal Host headers.
+     # if ($host !~* ^(mydomain.com|www.mydomain.com)$ ) {
+     #  return 405;
+     # }
+
+     ## Deny certain User-Agents (case insensitive)
+     ## The ~* makes it case insensitive as opposed to just a ~
+     # if ($http_user_agent ~* (Baiduspider|Jullo) ) {
+     #  return 405;
+     # }
+
+     ## Deny certain Referers (case insensitive)
+     ## The ~* makes it case insensitive as opposed to just a ~
+     # if ($http_referer ~* (babes|click|diamond|forsale|girl|jewelry|love|nudit|organic|poker|porn|poweroversoftware|sex|teen|video|webcam|zippo) ) {
+     #  return 405;
+     # }
+
+     ## Redirect from www to non-www
+     # if ($host = &apos;www.mydomain.com&apos; ) {
+     #  rewrite  ^/(.*)$  http://mydomain.com/$1  permanent;
+     # }
+
+     ## Stop Image and Document Hijacking
+     #location ~* (\.jpg|\.png|\.css)$ {
+     #   if ($http_referer !~ ^(http://mydomain.com) ) {
+     #     return 405;
+     #   }
+     # }
+
+     ## Restricted Access directory by password in the access_list file.
+      location ^~ /secure/ {
+            allow 127.0.0.1/32;
+
+            deny all;
+            auth_basic &quot;RESTRICTED ACCESS&quot;;
+            auth_basic_user_file /var/www/htdocs/secure/access_list;
+        }
+
+     ## Only allow these full URI paths relative to document root. If you only want
+     ## to reference the file name use $request_filename instead of $request_uri. By default
+     ## nginx will only serve out files in &quot;root /htdocs;&quot; defined above so this block is not needed, just an example.
+     #  if ($request_uri ~* (^\/|\.html|\.jpg|\.org|\.png|\.css|favicon\.ico|robots\.txt)$ ) {
+     #    break;
+     #  }
+     #  return 405;
+
+     ## Serve an empty 1x1 gif _OR_ an error 204 (No Content) for favicon.ico
+      location = /favicon.ico {
+       #empty_gif;
+        return 204;
+      }
+
+      ## System Maintenance (Service Unavailable)
+      if (-f $document_root/system_maintenance.html ) {
+        error_page 503 /system_maintenance.html;
+        return 503;
+      }
+
+     ## All other errors get the generic error page
+      error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 495 496 497
+                 500 501 502 503 504 505 506 507 /error_page.html;
+      location  /error_page.html {
+          internal;
+      }
+  }
+}
+</code></pre><hr>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Nginx/">Nginx</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/nginx/">nginx</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

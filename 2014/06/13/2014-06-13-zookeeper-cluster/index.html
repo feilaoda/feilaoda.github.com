@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Zookeeper集群配置 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="安装Zookeeper分为单机、伪集群、集群 三种模式
+下载 http://apache.fayea.com/apache-mirror/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz
+解压zookeeper-3.4.6.tar.gz到/home/f">
+  
+
+  
+  
+  <meta name="keywords" content="zookeeper">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Zookeeper集群配置"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Zookeeper集群配置</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/06/13/2014-06-13-zookeeper-cluster/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-06-12T16:00:00.000Z">
+          2014-06-13
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>安装Zookeeper分为单机、伪集群、集群 三种模式</p>
+<p>下载 <a href="http://apache.fayea.com/apache-mirror/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz" target="_blank" rel="external">http://apache.fayea.com/apache-mirror/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz</a></p>
+<p>解压zookeeper-3.4.6.tar.gz到/home/fld/zookeeper-3.4.6</p>
+<p>###伪集群模式</p>
+<p>这里假设建立3个节点服务</p>
+<pre><code>cd /home/fld/zookeeper-3.4.6
+</code></pre><p><strong>创建3个data文件夹:</strong></p>
+<pre><code>mkdir data0
+mkdir data1
+mkdir data2
+</code></pre><p><strong>创建3个log文件:</strong></p>
+<pre><code>mkdir log0
+mkdir log1
+mkdir log2
+</code></pre><p><strong>创建3个配置文件</strong></p>
+<pre><code>cp conf/zoo_sample.cfg conf/zoo_0.cfg
+cp conf/zoo_sample.cfg conf/zoo_1.cfg
+cp conf/zoo_sample.cfg conf/zoo_2.cfg
+</code></pre><p>3个配置文件，除了clientPort有点区别外，其他的配置项都是一样的。</p>
+<p><strong>编辑配置文件conf/zoo_0.cfg:</strong></p>
+<pre><code>tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=/home/fld/zookeeper-3.4.6/data0
+dataLogDir=/home/fld/zookeeper-3.4.6/logs0
+clientPort=2181
+server.0=127.0.0.1:2887:3887
+server.1=127.0.0.1:2888:3888
+server.2=127.0.0.1:2889:3889
+</code></pre><p><strong>编辑配置文件conf/zoo_1.cfg:</strong></p>
+<pre><code>tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=/home/fld/zookeeper-3.4.6/data1
+dataLogDir=/home/fld/zookeeper-3.4.6/logs1
+clientPort=2182
+server.0=127.0.0.1:2887:3887
+server.1=127.0.0.1:2888:3888
+server.2=127.0.0.1:2889:3889
+</code></pre><p><strong>编辑配置文件conf/zoo_2.cfg:</strong></p>
+<pre><code>tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=/home/fld/zookeeper-3.4.6/data2
+dataLogDir=/home/fld/zookeeper-3.4.6/logs2
+clientPort=2183
+server.0=127.0.0.1:2887:3887
+server.1=127.0.0.1:2888:3888
+server.2=127.0.0.1:2889:3889
+</code></pre><p><strong>创建myid文件,将相应的id写入myid文件</strong></p>
+<pre><code>echo 0 &gt; data0/myid
+echo 1 &gt; data1/myid
+echo 2 &gt; data2/myid
+</code></pre><p><strong>分别启动3个服务</strong></p>
+<pre><code>bin/zkServer.sh start conf/zoo_0.cfg
+bin/zkServer.sh start conf/zoo_1.cfg
+bin/zkServer.sh start conf/zoo_2.cfg
+</code></pre><p>###集群模式</p>
+<p>集群模式和伪集群模式类似，分别将zookeeper-3.4.6.tar.gz拷贝到3台服务器上，并解压；</p>
+<p>创建一个zoo.cfg</p>
+<pre><code>cd /home/fld/zookeeper-3.4.6
+cp conf/zoo_sample.cfg conf/zoo.cfg
+</code></pre><p>3台机器的配置文件zoo.cfg可以保持一样，编辑配置conf/zoo.cfg:</p>
+<pre><code>tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=/home/fld/zookeeper-3.4.6/data
+dataLogDir=/home/fld/zookeeper-3.4.6/logs
+clientPort=2181
+server.0=192.168.0.1:2888:3888
+server.1=192.168.0.2:2888:3888
+server.2=192.168.0.3:2888:3888
+</code></pre><p>分别在3台机器的/home/fld/zookeeper-3.4.6下创建目录data,然后创建myid文件，里面内容填写对应的server id：</p>
+<p>机器0:  </p>
+<pre><code>mkdir data
+echo 0 &gt; data/myid
+</code></pre><p>机器1:</p>
+<pre><code>mkdir data
+echo 1 &gt; data/myid
+</code></pre><p>机器2:</p>
+<pre><code>mkdir data
+echo 2 &gt; data/myid
+</code></pre><p>分布在3台机器上启动zookeeper:</p>
+<pre><code>/home/fld/zookeeper-3.4.6/bin/zkServer.sh start
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/BigData/">BigData</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/zookeeper/">zookeeper</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

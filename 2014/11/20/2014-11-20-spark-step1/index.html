@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Spark第一步 | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="##安装Spark
+通过 http://spark.apache.org/downloads.html 下载最新Spark，目前是1.0.2版本。下载后解压到/opt/spark-1.0.2-bin-hadoop2
+也可以通过源码进行编译
+1sbt/sbt -Dhadoop.version=2.2.">
+  
+
+  
+  
+  <meta name="keywords" content="scala,spark">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Spark第一步"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Spark第一步</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/11/20/2014-11-20-spark-step1/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-11-19T16:00:00.000Z">
+          2014-11-20
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>##安装Spark</p>
+<p>通过 <a href="http://spark.apache.org/downloads.html" target="_blank" rel="external">http://spark.apache.org/downloads.html</a> 下载最新Spark，目前是1.0.2版本。<br>下载后解压到/opt/spark-1.0.2-bin-hadoop2</p>
+<p>也可以通过源码进行编译</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sbt/sbt -Dhadoop.version=2.2.0 -Pyarn assembly</div></pre></td></tr></table></figure>
+<p>启动本地模式，可以使用pyspark启动，用于开发环境，这里主要讲Python环境</p>
+<pre><code>cd /opt/spark-1.0.2-bin-hadoop2
+
+./bin/pyspark --master local[4]
+</code></pre><p>通过如下指令，可以加载数据文件people.txt</p>
+<pre><code>Michael, 29
+Andy, 30
+Justin, 19
+</code></pre><p>sc是pyspark中已经定义的一个变量， sc = SparkContext(…)，可以直接使用。sc.textFile加载TXT数据文件</p>
+<pre><code>lines = sc.textFile(&quot;examples/src/main/resources/people.txt&quot;)
+</code></pre><p>map函数是MapReduce里面的map动作，可以使用lambda处理简单的逻辑，或者直接写python代码。这里是用”,”把每一行分隔成数组。</p>
+<pre><code>parts = lines.map(lambda l:l.split(&quot;,&quot;))
+</code></pre><p>可以使用collect()方法打印parts的内容，比如<code>parts.collect()</code>输出结果是</p>
+<pre><code>[[u&apos;Michael&apos;, u&apos; 29&apos;], [u&apos;Andy&apos;, u&apos; 30&apos;], [u&apos;Justin&apos;, u&apos; 19&apos;]]
+</code></pre><p>reduceByKey是根据map出来的key做reduce，比如<code>counts = parts.reduceByKey(lambda a, b: a + b)</code></p>
+<p>完整的代码如下：</p>
+<pre><code>lines = sc.textFile(&quot;examples/src/main/resources/people.txt&quot;)
+parts = lines.map(lambda l:l.split(&quot;,&quot;))
+parts = parts.map(lambda p:(p[0].strip(), int(p[1].strip())))
+counts = parts.reduceByKey(lambda a, b: a + b)
+counts.collect()
+
+#输出
+[(u&apos;Michael&apos;, 29), (u&apos;Andy&apos;, 30), (u&apos;Justin&apos;, 19)]
+</code></pre><p>如果people.txt中的数据是下面的：</p>
+<pre><code>Michael, 29
+Andy, 30
+Justin, 19
+Michael, 11
+Justin, 20
+</code></pre><p>那么<code>counts.collect()</code>的输出结果就是下面的情况了</p>
+<pre><code>[(u&apos;Michael&apos;, 40), (u&apos;Andy&apos;, 30), (u&apos;Justin&apos;, 39)]
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Spark/">Spark</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/scala/">scala</a><a href="/tags/spark/">spark</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

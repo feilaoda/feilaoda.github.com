@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Thrift序列化和反序列化(JAVA版) | Hexo</title>
+
+  
+  <meta name="author" content="fld">
+  
+
+  
+  <meta name="description" content="Thrift支持的类型
+
+bool: 布尔型 A boolean value (true or false)
+byte: 字节 An 8-bit signed integer
+i16: 16位有符号整数 A 16-bit signed integer
+i32: 32位有符号整数 A 32-bit s">
+  
+
+  
+  
+  <meta name="keywords" content="java,thrift">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="Thrift序列化和反序列化(JAVA版)"/>
+
+  <meta property="og:site_name" content="Hexo"/>
+
+  
+  <meta property="og:image" content="/favicon.ico"/>
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">Hexo</a>
+    </h1>
+    <p class="site-description"></p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/archives">Archives</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    
+<article>
+
+  
+    
+    <h3 class="article-title"><span>Thrift序列化和反序列化(JAVA版)</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2014/09/05/2014-09-05-thrift-in-java/" rel="bookmark">
+        <time class="entry-date published" datetime="2014-09-04T16:00:00.000Z">
+          2014-09-05
+        </time>
+      </a>
+    </span>
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <p>Thrift支持的类型</p>
+<ul>
+<li>bool: 布尔型 A boolean value (true or false)</li>
+<li>byte: 字节 An 8-bit signed integer</li>
+<li>i16: 16位有符号整数 A 16-bit signed integer</li>
+<li>i32: 32位有符号整数 A 32-bit signed integer</li>
+<li>i64: 64位有符号整数 A 64-bit signed integer</li>
+<li>double: 64为浮点数 A 64-bit floating point number</li>
+<li>string: UTF-8字符串 A text string encoded using UTF-8 encoding</li>
+<li>binary: a sequence of unencoded bytes</li>
+</ul>
+<p>典型的IDL定义文件是这样的</p>
+<pre><code>#thrift
+#demo.thrift
+namespace java com.test.dto
+
+struct DemoMessage {
+    1: string home,
+    2: i32 age,
+    3: string name,
+    4: optional i32 high,
+    5: optional i64 time,
+
+}
+</code></pre><p>通过thrift命令可以生成Java定义文件 <code>thrift --gen java demo.thrift</code></p>
+<p>序列化</p>
+<pre><code>try {
+
+    TMemoryBuffer mb = new TMemoryBuffer(64);
+    TBinaryProtocol proto = new TBinaryProtocol(mb);
+    DemoMessage data = new DemoMessage();
+    data.setHome(&quot;my home address&quot;);
+    data.setName(&quot;sam&quot;);
+    data.setAge(20);
+    //...
+    data.write(proto);
+
+    byte[] bytes = mb.getArray();
+} catch (TException e) {
+    e.printStackTrace();
+}
+</code></pre><p>反序列化</p>
+<pre><code>try {
+    //byte[] bytes = mb.getArray();
+
+    TMemoryBuffer mb = new TMemoryBuffer(64);
+    mb.write(bytes);
+    TBinaryProtocol proto = new TBinaryProtocol(mb);
+
+
+    DemoMessage data = new DemoMessage();
+    data.read(proto);
+
+    System.out.println(data);
+
+} catch (TException e) {
+    e.printStackTrace();
+}
+</code></pre>
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/Java/">Java</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/java/">java</a><a href="/tags/thrift/">thrift</a>
+    </span>
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    </br>
+    
+    &copy; 2017 fld
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
